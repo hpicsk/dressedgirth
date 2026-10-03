@@ -139,8 +139,8 @@ def test_widths_lower_the_error_in_every_outfit():
 def test_loss_holds_in_every_configuration():
     starts = {k: min(own(b, "loss_ci95", 0)) for k, b in results()["configurations"].items()}
     assert all(v > 0 for v in starts.values()), (
-        f"sec:results claims that 'under the two other scale rules with the widths and under each of the three rules "
-        f"with the ellipse girth, every own outfit's loss interval starts above zero', and the abstract that 'The "
+        f"sec:results claims that 'every own outfit's loss interval starts above zero under the two other scale rules "
+        f"with the widths and under each of the three rules with the ellipse girth', and the abstract that 'The "
         f"clothing lowered the contribution under each of three rules'; the lowest interval starts are {starts}")
 
 def test_increment_bound_over_every_configuration():
