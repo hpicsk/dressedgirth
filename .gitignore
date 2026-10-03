@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Claude Code machine-local settings (not shared)
+.claude/settings.local.json
+
+# The corpus lives under $AIHUB_ROOT, never in the repo: the AI Hub terms restrict redistribution of what the
+# providers supply.
+*.zip
+
+# The authors' working notes, which no stage of the analysis reads.
+_internal/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+paper/*.pdf
