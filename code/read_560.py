@@ -1,5 +1,6 @@
-"""Readers for AI Hub dataset 560 (한국인 전신 형상 및 치수 측정 데이터): the tape measurements, and for each image of
-the standing pose the half-width of the torso polygon at the measured waist height.
+"""Readers for the AI Hub dataset Whole Body Shape and Dimension Measurement Data for Koreans (한국인 전신 형상 및 치수
+측정 데이터): the tape measurements, and for each image of the standing pose the half-width of the torso polygon at the
+measured waist height.
 
 The label zips and 신체정보데이터.zip are read from $AIHUB_ROOT/560_labels, as AI Hub distributes them (README.md).
 The corpus path is resolved at use, so a module that imports this one, as the tests do, needs no corpus.
@@ -16,16 +17,24 @@ from collections import Counter
 import numpy as np
 
 POSE = "01"  # CHOSEN: 차렷, the standing pose, the only one whose torso polygon the frontal and diagonal pillars carry
-SUIT = "01"  # the builders' code for 측정복, the measurement suit (guide: Cloth 01)
+SUIT = "01"  # the creators' code for 측정복, the measurement suit (guide: Cloth 01)
 OWN_CLOTHES = ["02", "03", "04", "05", "06"]  # 춘추복1, 춘추복2, 하복1, 하복2, 동복: the subjects' own outfits
 OUTFITS = [SUIT] + OWN_CLOTHES
-PILLAR = {1: "A", 2: "B", 4: "D", 6: "F", 8: "H"}  # pillar index -> name, cameras 4(i-1)+1..4i; see rig.py
-DIAGONAL = ("B", "D", "F", "H")  # ±45° and ±135° from A, which faces the subject (rig.py measures the order)
+CAMERAS_PER_PILLAR = 4  # the guide, 제작 도구: 총 8각으로 한 각(기둥)에 4대의 카메라로 구성
+PILLARS = "ABCDEFGH"  # the guide's 8 pillars, named in the order of their camera numbers (sec:rig)
+CAMERAS = CAMERAS_PER_PILLAR * len(PILLARS)  # the guide: DSLR 32대
+DIAGONAL = ("B", "D", "F", "H")  # MEASURED by rig.py: ±45° and ±135° from A, which the subject faces
+# CHOSEN: the frontal half-width from A alone, because E sees the same extent from behind
+WIDTH_PILLARS = ("A",) + DIAGONAL
 SCALE_RULES = ("shod_own_clothes", "shod_always", "barefoot_always")  # which images add 신발굽높이 to 키
 POOL = 12  # worker processes; the result does not depend on it
 
+def pillar_of(camera):
+    """The pillar that holds a camera, cameras 1-4 on A, 5-8 on B and so on."""
+    return PILLARS[(camera - 1) // CAMERAS_PER_PILLAR]
+
 def corpus():
-    """The directory of the 560 label zips; a missing $AIHUB_ROOT is the error message."""
+    """The directory of the dataset's label zips; a missing $AIHUB_ROOT is the error message."""
     return os.path.join(os.environ["AIHUB_ROOT"], "560_labels")
 
 def label_zips():
@@ -107,8 +116,8 @@ def read_zip(args):
                 continue
             pose, outfit, subject, camera = os.path.basename(m)[:-5].split("_")
             camera = int(camera)
-            pillar = PILLAR.get((camera - 1) // 4 + 1)
-            if pose != POSE or pillar is None or subject not in tape:
+            pillar = pillar_of(camera)
+            if pose != POSE or pillar not in WIDTH_PILLARS or subject not in tape:
                 continue
             raw = zf.read(m)
             if not raw:
@@ -120,7 +129,8 @@ def read_zip(args):
             top, bottom = L["머리"][:, 1].min(), max(F[:, 1].max() for F in feet)
             H = bottom - top
             t = tape[subject]
-            row = {"subject": subject, "outfit": outfit, "pillar": pillar, "camera_height": (camera - 1) % 4 + 1, "H": H}
+            row = {"subject": subject, "outfit": outfit, "pillar": pillar,
+                   "camera_height": (camera - 1) % CAMERAS_PER_PILLAR + 1, "H": H}
             for rule in SCALE_RULES:
                 heel = heel_for(t, outfit, rule)
                 c = chord(L["몸통"], bottom - (t["waist_height"] + heel) / (t["stature"] + heel) * H)

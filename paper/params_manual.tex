@@ -1,20 +1,12 @@
-% params_manual.tex -- the numbers that no result table in this repository derives: figures that other people
-% reported, and facts of the dataset's documentation. Hand-edited; each line names its source. test_assertions.py
-% reads this file beside params.tex.
+% params_manual.tex -- the numbers that no result table or script in this repository derives: the versions of the
+% software, and facts of the dataset's documentation that no script uses. Hand-edited; each line names its source.
+% test_assertions.py reads this file beside params.tex.
 % Population: none
-
-% Published results.
-\newcommand{\fengError}{1.08}             % Feng et al. (2026), abstract: average relative error of the predicted chest, waist and hip girths; their relative error is the absolute error over the tape value, in percent (Experiment and analysis)
-\newcommand{\bartolWaistRegression}{39.5} % Bartol et al. (2022), Table 6, column E (waist), Baseline (I = 2) on BODY-fit+W: MAE in mm
-\newcommand{\bartolWaistSmplify}{74.7}    % the same table and column, SMPLify on BODY-fit
-\newcommand{\bartolWaistExpose}{116.7}    % the same table and column, ExPose on BODY-fit
 
 % The software that ran the analysis (requirements.txt pins it; test_assertions.py compares the two).
 \newcommand{\sklearnVersion}{1.8.0}     % requirements.txt: scikit-learn==1.8.0
+\newcommand{\numpyVersion}{2.4.2}       % requirements.txt: numpy==2.4.2
 
-% Dataset 560's documentation (the construction guide and the data manual that AI Hub distributes with it).
+% The dataset's documentation (the construction guide and the data manual that AI Hub distributes with it).
 \newcommand{\buildYear}{2021}             % manual, meta table: 데이터 구축년도 2021년
 \newcommand{\subjectsPlanned}{1{,}000}    % guide, 촬영 대상: 1,000 명의 한국 국적 남녀
-\newcommand{\camerasTotal}{32}            % guide, 제작 도구: 2D 이미지 데이터 획득 장비 (DSLR 32대)
-\newcommand{\pillarsTotal}{8}             % the same line: 총 8각으로 한 각(기둥)에 4대의 카메라로 구성
-\newcommand{\camerasPerPillar}{4}         % the same line

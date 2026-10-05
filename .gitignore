@@ -23,3 +23,4 @@ _internal/
 *.out
 *.synctex.gz
 paper/*.pdf
+!paper/fig_*.pdf

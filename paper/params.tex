@@ -2,79 +2,81 @@
 % edit the script, never this file. Each number counts the population that its block names
 % ("% Population:"), or the one that a [population: ...] note on its line names.
 %
-% Population tape: dataset 560's tape records (신체정보데이터.zip), the subjects that carry every field the analysis reads
+% Population tape: the dataset's tape records (신체정보데이터.zip), the subjects that carry every field the analysis reads
 % Population images: the standing-pose label files of pillars A, B, D, F and H that carry the head, the torso and a foot, of the subjects in the tape population
 % Population rig-images: the standing-pose label files of all 32 cameras that carry the head and a foot
 % Population pose-images: the standing-pose label files of all 32 cameras
 % Population hip-images: the standing-pose label files of pillar A that carry the head, a foot and the torso, of the tape subjects whose record gives the hip height
-% Population rows: the combinations of subject, outfit and camera height in the images population, under the primary scale rule
-% Population subjects: the subjects with the outline features in all six outfits, under the scale rule that the configuration names (the primary rule unless a macro's name says otherwise)
+% Population subjects: the subjects with the widths in all six outfits, under the scale rule that the configuration names (the primary rule unless a macro's name says otherwise)
 % Population none: a number that counts no population
+% Crossing statureGainMin statureGainMax heelMedianCm heelShareMedian: the rise in the height in pixels, over pairs of photographs, against the recorded heel height over the tape subjects: the comparison that makes the primary scale rule and the no-heel rule bounds on the shoes' rise
 
-% Design constants (code/increment.py, code/read_560.py)
+% Design constants (code/reduction.py, code/read_560.py)
 % Population: none
 \newcommand{\nFolds}{5}
 \newcommand{\nPartitionSeeds}{9}
 \newcommand{\nBoot}{2{,}000}
+\newcommand{\camerasTotal}{32}
+\newcommand{\pillarsTotal}{8}
+\newcommand{\camerasPerPillar}{4}
+\newcommand{\ciLevel}{95}
+\newcommand{\ciLowerPct}{2.5}
+\newcommand{\ciUpperPct}{97.5}
+\newcommand{\selfReportSdCm}{1}
+\newcommand{\selfReportSdKg}{1.5}
+\newcommand{\nDraws}{20}
 
-% Counts (code/increment.py)
+% Counts (code/reduction.py)
 % Population: subjects
 \newcommand{\nTapeSubjects}{997}  % [population: tape]
-\newcommand{\nRows}{20{,}649}  % [population: rows]
-\newcommand{\nRowsKept}{16{,}539}  % [population: rows]
 \newcommand{\nSubjects}{706}
 \newcommand{\nSuitSubjects}{750}  % [population: tape]
 \newcommand{\nOwnSubjectsMin}{731}  % [population: tape]
 \newcommand{\nOwnSubjectsMax}{747}  % [population: tape]
 
-% Primary configuration: heel in own clothes only, the two widths (code/increment.py)
+% Primary configuration: heel in own clothes only, the two widths (code/reduction.py)
 % Population: subjects
 \newcommand{\mapeBaseline}{3.31}
 \newcommand{\rmseBaseline}{3.33}
-\newcommand{\mapeSuit}{2.62}
-\newcommand{\rmseSuit}{2.73}
-\newcommand{\incSuit}{0.69}
-\newcommand{\incSuitLo}{0.53}
-\newcommand{\incSuitHi}{0.85}
-\newcommand{\mapeOwnMin}{3.21}
-\newcommand{\mapeOwnMax}{3.23}
-\newcommand{\incOwnMin}{0.08}
-\newcommand{\incOwnMax}{0.11}
-\newcommand{\incOwnLoMin}{0.01}
-\newcommand{\incOwnLoMax}{0.03}
-\newcommand{\lossMin}{0.58}
-\newcommand{\lossMax}{0.61}
-\newcommand{\lossLoMin}{0.43}
-\newcommand{\lossLoMax}{0.46}
-\newcommand{\incSuitSeedMin}{0.67}
-\newcommand{\incSuitSeedMax}{0.70}
-\newcommand{\incOwnSeedMin}{0.06}
-\newcommand{\incOwnSeedMax}{0.12}
-\newcommand{\mapeWeightSuit}{3.21}
+\newcommand{\redSuit}{0.69}
+\newcommand{\redOwnMin}{0.08}
+\newcommand{\redOwnMax}{0.11}
+\newcommand{\shortfallMin}{0.58}
+\newcommand{\shortfallMax}{0.61}
+\newcommand{\redSuitSeedMin}{0.67}
+\newcommand{\redSuitSeedMax}{0.70}
+\newcommand{\redOwnSeedMin}{0.06}
+\newcommand{\redOwnSeedMax}{0.12}
 \newcommand{\weightSuitDiffLo}{$-$0.36}
 \newcommand{\weightSuitDiffHi}{0.17}
-\newcommand{\mapeWeightOwnMin}{5.04}
-\newcommand{\mapeWeightOwnMax}{5.28}
 \newcommand{\weightOwnDiffLoMin}{1.42}
-\newcommand{\shiftFrontMin}{2.4}
-\newcommand{\shiftFrontMax}{2.8}
-\newcommand{\shiftDiagMin}{2.1}
-\newcommand{\shiftDiagMax}{2.4}
-\newcommand{\shiftQuartileLo}{1.3}
-\newcommand{\shiftQuartileHi}{4.1}
+\newcommand{\growthIqrMin}{1.9}
+\newcommand{\growthIqrMax}{2.2}
 
-% Sensitivities: the other scale rules and the ellipse girth (code/increment.py)
+% Sensitivities: the other scale rules and the ellipse girth (code/reduction.py)
 % Population: subjects
 \newcommand{\nSubjectsNoHeel}{698}
-\newcommand{\incOwnMaxAll}{0.12}
+\newcommand{\redOwnMaxAll}{0.12}
+
+% Self-reported stature and weight: the main variant with the self-report error (code/reduction.py)
+% Population: subjects
+\newcommand{\selfBaseMin}{3.49}
+\newcommand{\selfBaseMax}{3.74}
+\newcommand{\selfRedSuitMin}{0.76}
+\newcommand{\selfRedSuitMax}{0.98}
+\newcommand{\selfRedOwnMin}{0.11}
+\newcommand{\selfRedOwnMax}{0.24}
 
 % The rig (code/rig.py)
 % Population: rig-images
 \newcommand{\legRatioDiagMin}{0.66}
 \newcommand{\legRatioDiagMax}{0.74}
 \newcommand{\legRatioSideMax}{0.11}
+\newcommand{\legRatioRear}{0.98}
 \newcommand{\statureGainMin}{1.2}
 \newcommand{\statureGainMax}{1.3}
+\newcommand{\heelMedianCm}{4.0}  % [population: tape]
+\newcommand{\heelShareMedian}{2.4}  % [population: tape]
 \newcommand{\nPhotographedSubjects}{981}  % [population: tape]
 \newcommand{\torsoSideMax}{1.0}  % [population: pose-images]
 \newcommand{\torsoOtherMin}{98.9}  % [population: pose-images]
