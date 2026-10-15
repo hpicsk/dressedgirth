@@ -19,8 +19,8 @@ TABLES = {"tab_outfits.tex": "outfits", "tab_sensitivity.tex": "sensitivity", "t
 
 POPULATIONS = {
     "tape": "the dataset's tape records (신체정보데이터.zip), the subjects that carry every field the analysis reads",
-    "images": ("the standing-pose label files of pillars A, B, D, F and H that carry the head, the torso and a foot, "
-               "of the subjects in the tape population"),
+    "images": ("the standing-pose label files of pillars A, B, D, E, F and H that carry the head, the torso and a "
+               "foot, of the subjects in the tape population"),
     "rig-images": "the standing-pose label files of all 32 cameras that carry the head and a foot",
     "pose-images": "the standing-pose label files of all 32 cameras",
     "hip-images": ("the standing-pose label files of pillar A that carry the head, a foot and the torso, of the tape "
@@ -32,9 +32,10 @@ POPULATIONS = {
 # The sentences that print numbers of two populations on purpose, each with its reason; test_assertions.py fails a
 # sentence that prints numbers of two populations without a line here.
 CROSSINGS = [
-    (("statureGainMin", "statureGainMax", "heelMedianCm", "heelShareMedian"),
+    (("statureGainMin", "statureGainMax", "heelShareMedian"),
      "the rise in the height in pixels, over pairs of photographs, against the recorded heel height over the tape "
-     "subjects: the comparison that makes the primary scale rule and the no-heel rule bounds on the shoes' rise"),
+     "subjects: the comparison that makes the primary scale rule and the rule that adds no heel height bounds on the "
+     "shoes' rise"),
 ]
 OUTFIT_NAMES = {"01": "Measurement suit", "02": "Spring/autumn 1", "03": "Spring/autumn 2", "04": "Summer 1",
                 "05": "Summer 2", "06": "Winter"}
@@ -86,25 +87,14 @@ def blocks():
         ("nOwnSubjectsMin", count(min(prim["subjects_with_features_by_outfit"][g] for g in r5.OWN_CLOTHES)), "tape"),
         ("nOwnSubjectsMax", count(max(prim["subjects_with_features_by_outfit"][g] for g in r5.OWN_CLOTHES)), "tape")])
     yield ("Primary configuration: heel in own clothes only, the two widths (code/reduction.py)", "subjects", [
-        ("mapeBaseline", pp(prim["mape_baseline"])), ("rmseBaseline", rmse(prim["rmse_baseline"])),
+        ("mapeBaseline", pp(prim["mape_baseline"])),
         ("redSuit", pp(suit["reduction_pp"])),
         ("redOwnMin", pp(min(own(prim, "reduction_pp")))), ("redOwnMax", pp(max(own(prim, "reduction_pp")))),
         ("shortfallMin", pp(min(own(prim, "shortfall_pp")))), ("shortfallMax", pp(max(own(prim, "shortfall_pp")))),
-        ("redSuitSeedMin", pp(suit["reduction_pp_range_seeds_1_9"][0])),
-        ("redSuitSeedMax", pp(suit["reduction_pp_range_seeds_1_9"][1])),
-        ("redOwnSeedMin", pp(min(own(prim, "reduction_pp_range_seeds_1_9", 0)))),
-        ("redOwnSeedMax", pp(max(own(prim, "reduction_pp_range_seeds_1_9", 1)))),
-        ("weightSuitDiffLo", pp(suit["weight_widths_minus_baseline_ci95"][0])),
-        ("weightSuitDiffHi", pp(suit["weight_widths_minus_baseline_ci95"][1])),
-        ("weightOwnDiffLoMin", pp(min(own(prim, "weight_widths_minus_baseline_ci95", 0)))),
         ("growthIqrMin", cm(min(q[k][1] - q[k][0] for q in own(prim, "width_growth_cm_iqr") for k in (0, 1)))),
         ("growthIqrMax", cm(max(q[k][1] - q[k][0] for q in own(prim, "width_growth_cm_iqr") for k in (0, 1))))])
-    widths = [config(r, "widths") for r in r5.SCALE_RULES]
-    girth = [config(r, "girth") for r in r5.SCALE_RULES]
     yield ("Sensitivities: the other scale rules and the ellipse girth (code/reduction.py)", "subjects", [
-        ("nSubjectsNoHeel", count(config("barefoot_always", "widths")["n_subjects"])),
-        ("redOwnMaxAll", pp(max(max(own(b, "reduction_pp") + own(b, "reduction_pp_range_seeds_1_9", 1))
-                                for b in widths + girth)))])
+        ("nSubjectsNoHeel", count(config("barefoot_always", "widths")["n_subjects"]))])
     draws = res["self_report"]["draws"]
     yield ("Self-reported stature and weight: the main variant with the self-report error (code/reduction.py)",
            "subjects", [
@@ -115,21 +105,17 @@ def blocks():
         ("selfRedOwnMin", pp(min(min(own(d, "reduction_pp")) for d in draws))),
         ("selfRedOwnMax", pp(max(max(own(d, "reduction_pp")) for d in draws)))])
     rig = load("rig.json")
-    diag = [abs(rig["leg_offset_ratio_to_A"][p]) for p in r5.DIAGONAL]
-    side = [abs(rig["leg_offset_ratio_to_A"][p]) for p in ("C", "G")]
     gain = [100 * (v["median"] - 1) for v in rig["height_px_ratio_to_suit"].values()]
     torso = {p: 100 * v["with_torso"] / v["images"] for p, v in rig["torso_by_pillar"].items()}
     hip = [100 * v["hip_level_inside_torso"] / v["images"] for v in rig["hip_level_in_pillar_A"].values()]
     yield ("The rig (code/rig.py)", "rig-images", [
-        ("legRatioDiagMin", f"{min(diag):.2f}"), ("legRatioDiagMax", f"{max(diag):.2f}"),
-        ("legRatioSideMax", f"{max(side):.2f}"), ("legRatioRear", f"{abs(rig['leg_offset_ratio_to_A']['E']):.2f}"),
         ("statureGainMin", f"{min(gain):.1f}"), ("statureGainMax", f"{max(gain):.1f}"),
-        ("heelMedianCm", f"{rig['heel_cm_median']:.1f}", "tape"),
         ("heelShareMedian", f"{rig['heel_share_of_stature_pct']['median']:.1f}", "tape"),
         ("nPhotographedSubjects", count(rig["tape_subjects_photographed"]), "tape"),
         ("torsoSideMax", f"{max(torso[p] for p in ('C', 'G')):.1f}", "pose-images"),
         ("torsoOtherMin", f"{min(v for p, v in torso.items() if p not in ('C', 'G')):.1f}", "pose-images"),
-        ("hipShareMin", f"{min(hip):.0f}", "hip-images"), ("hipShareMax", f"{max(hip):.0f}", "hip-images")])
+        ("hipShareMin", f"{min(hip):.0f}", "hip-images"), ("hipShareMax", f"{max(hip):.0f}", "hip-images"),
+        ("footImagesE", count(rig["torso_by_pillar"]["E"]["with_head_torso_foot"]), "pose-images")])
 
 def render():
     lines = ["% params.tex: the numbers that the manuscript prints from results/, written by code/make_params.py;",
@@ -147,11 +133,11 @@ def render():
 def ci(v):
     return f"{pp(v[0])}--{pp(v[1])}"
 
-OUTFITS_HEAD = r"""\begin{tabular}{lrrlrlrlrrr}
+OUTFITS_HEAD = r"""\begin{tabular}{lrrlrlrlrr}
 \toprule
- & Width & \multicolumn{4}{c}{Reduction} & \multicolumn{2}{c}{Shortfall} & Weight + & \multicolumn{2}{c}{Width growth} \\
-\cmidrule(lr){3-6}\cmidrule(lr){7-8}\cmidrule(lr){10-11}
-Outfit & model & pp & \ciLevel\% interval & cm & \ciLevel\% interval & pp & \ciLevel\% interval & widths & Frontal & Diagonal \\
+ & Width & \multicolumn{4}{c}{Reduction} & \multicolumn{2}{c}{Shortfall} & \multicolumn{2}{c}{Width growth} \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-8}\cmidrule(lr){9-10}
+Outfit & model & pp & \ciLevel\% interval & cm & \ciLevel\% interval & pp & \ciLevel\% interval & Frontal & Diagonal \\
 \midrule
 """
 SENSITIVITY_HEAD = r"""\begin{tabular}{llrlrrrrrr}
@@ -174,8 +160,7 @@ def outfits():
         growth = " & ".join(cm(v) for v in r["width_growth_cm_median"]) if g != r5.SUIT else "-- & --"
         rows.append(f"{OUTFIT_NAMES[g]} & {pp(r['mape'])} & {pp(r['reduction_pp'])} & {ci(r['reduction_ci95'])} & "
                     f"{rmse(r['reduction_rmse_cm'])} & {rmse(r['reduction_rmse_cm_ci95'][0])}--"
-                    f"{rmse(r['reduction_rmse_cm_ci95'][1])} & {shortfall} & {pp(r['weight_widths_mape'])} & "
-                    f"{growth} \\\\")
+                    f"{rmse(r['reduction_rmse_cm_ci95'][1])} & {shortfall} & {growth} \\\\")
     return OUTFITS_HEAD + "\n".join(rows) + "\n" + TAIL
 
 def sensitivity():

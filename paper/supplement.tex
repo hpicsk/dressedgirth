@@ -5,9 +5,14 @@
 \input{glyphtounicode}
 \pdfgentounicode=1
 \usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage[numbers,super,sort&compress]{natbib}
+\usepackage{xr}
+\externaldocument[M-]{main}
 \input{params}
 \input{title}
 \renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thesection}{S\arabic{section}}
 
 \title{Supplementary material for: \papertitle}
 \date{}
@@ -15,16 +20,44 @@
 \begin{document}
 \maketitle
 
+\section{Pillar angles and shoes}\label{sec:rigangles}
+
+The leg offset, in units of the subject's height in pixels, is the mean horizontal coordinate of the right lower-leg
+polygon's vertices minus the mean horizontal coordinate of the left lower-leg polygon's vertices. For each camera, we
+took the median of the leg offset over subjects. For each pillar, we
+averaged the cameras' medians over the pillar's cameras. The leg offset is negative in pillar A, which means that the
+subject's right leg appears on the left of the image, so pillar A faces the subject's front. By the
+$\cos\theta$ shortening that the main text describes, the ratio of a pillar's leg offset to pillar A's leg offset is
+about 0.71 at $\pm45^\circ$, 0 at $\pm90^\circ$, $-0.71$ at $\pm135^\circ$ and $-1$ at $180^\circ$. Figure~\ref{M-fig:rig}(a) in
+the main text prints each pillar's measured ratio, which lies nearest the ratio for the angle at which the main text
+places the pillar.
+
+To test whether the subjects wore shoes, we paired each own-outfit photograph of a subject with the same camera's
+photograph of the subject in the measurement suit. For each pair, we divided the height in pixels in the outfit by the
+height in pixels in the suit. For each own outfit, we took the median of this ratio over the pairs.
+
+\section{Self-reported stature and weight}\label{sec:selfreport}
+
+Because a customer reports stature and weight with error, we added self-report errors to stature and weight in
+\nDraws\ random draws and repeated the main variant's baseline and width models in each draw. The errors are
+normal, with the standard deviations of \selfReportSdCm~cm and \selfReportSdKg~kg that Bartol et al.\
+assumed.\cite{bartol2022} In each draw, the stature with its error also sets the scale $S$. With the errors added, the
+baseline model's MAPE rises from \mapeBaseline\% to \selfBaseMin--\selfBaseMax\% over the draws. In the same
+draws, the widths lower the baseline model's MAPE by \selfRedSuitMin--\selfRedSuitMax~pp in the suit and by
+\selfRedOwnMin--\selfRedOwnMax~pp in the own outfits (Table~\ref{tab:selfreport}). With the errors added, the \ciLevel\% confidence
+interval of each own outfit's reduction and that of its shortfall lie above zero in every draw.
+
 \begin{table}[h]
 \centering
 \caption{The reduction and the shortfall in each variant of the analysis, which pairs a scale rule with the widths or
-the ellipse girth. Added: the input that the variant adds to the baseline model's inputs, the widths or the ellipse girth. Heel
-added: the outfits in which the recorded heel height is added to the stature (own outfits only under the primary rule,
-the top two rows). $n$: the subjects with kept camera heights in all six outfits. Suit: the measurement suit's reduction
-with its \ciLevel\% bootstrap confidence interval. Own outfits: the range of the five own outfits' reductions, and how many of
-their intervals lie above zero. Shortfall: the range over the five outfits and the lowest lower bound of their
+the ellipse girth. Added: the input that the variant adds to the
+baseline model's inputs, the widths or the ellipse girth. Heel
+added: the outfits in which the recorded heel height is added to the stature. The primary rule adds it in the own
+outfits only, in the top two rows. $n$: the subjects who have widths in all six outfits. Suit: the measurement suit's reduction
+with its \ciLevel\% bootstrap confidence interval. Own outfits: the range of the five own outfits' reductions, and the number
+of their intervals that lie above zero (Above 0). Shortfall: the range over the five outfits and the lowest lower bound of their
 intervals. Other fold splits: the range of the reductions under \nPartitionSeeds\ further random splits into folds, for the suit
-and over the five own outfits. All other values in percentage points. Differences were computed before rounding.}
+and over the five own outfits. Ranges, intervals and bounds are in percentage points.}
 \label{tab:sensitivity}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
@@ -33,15 +66,15 @@ and over the five own outfits. All other values in percentage points. Difference
 
 \begin{table}[h]
 \centering
-\caption{The reduction and the shortfall in the main variant with the self-report errors that Bartol et al.\ assumed for
-stature and weight, normal with standard deviations of \selfReportSdCm~cm and \selfReportSdKg~kg, added in each of
-\nDraws\ random draws; the stature with its error also sets the scale. Mean and Range: over the draws. Lowest bound:
-the lowest lower bound of the \ciLevel\% bootstrap confidence interval over the draws. The baseline model's MAPE is
-\selfBaseMin--\selfBaseMax\% over the draws. All values in percentage points. Differences were computed before
-rounding.}
+\caption{The reduction and the shortfall in the main variant with self-report errors added to stature and weight in
+each of \nDraws\ random draws. Mean and Range: over the draws. Lowest bound: the lowest lower bound of the \ciLevel\%
+bootstrap confidence interval over the draws. All values in percentage points.}
 \label{tab:selfreport}
 \scriptsize
 \input{tab_self_report}
 \end{table}
+
+\bibliographystyle{vancouver-sage}
+\bibliography{refs}
 
 \end{document}

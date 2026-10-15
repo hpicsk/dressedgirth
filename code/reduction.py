@@ -2,10 +2,10 @@
 measurement suit and in each of the subjects' own outfits.
 
 Per subject and outfit, the features are the torso polygon's frontal width 2a·S and diagonal width 2m·S at the
-waist level, in cm: a is pillar A's half-width, m the mean half-width over the diagonal pillars, each averaged over
-the camera heights, and S the height in cm that the image shows (키 plus the heel under the scale rule). The sensitivity
-analysis replaces the widths with the ellipse girth, the ellipse with semi-axes a and b = √(2m² − a²), whose 45°
-projection is m. The baseline regresses the tape waist girth
+waist level, in cm: a is the mean half-width over the pillars on the front-back axis, A and E, m the mean half-width
+over the diagonal pillars, each averaged over the camera heights, and S the height in cm that the image shows (키 plus
+the heel under the scale rule). The sensitivity analysis replaces the widths with the ellipse girth, the ellipse
+with semi-axes a and b = √(2m² − a²), whose 45° projection is m. The baseline regresses the tape waist girth
 on 키, 몸무게, 성별 and 나이; the reduction of outfit g is the baseline's MAPE minus the MAPE of the baseline plus
 outfit g's features, out of fold, and the shortfall of g is the suit's reduction minus g's. The main variant is also
 scored with self-report errors added to stature and weight, as Bartol et al. model a customer's report. Writes
@@ -54,8 +54,8 @@ FEATURE_SETS = ("widths", "girth")
 
 def features(images, tape, rule):
     """Per (subject, outfit): the frontal and diagonal widths and the ellipse girth, in cm. A camera height counts
-    when it carries pillar A and at least one diagonal pillar with 2m² > a²; each feature is averaged over the camera
-    heights that count."""
+    when it carries at least one of pillars A and E and at least one diagonal pillar, with 2m² > a²; each feature is
+    averaged over the camera heights that count."""
     cells = defaultdict(lambda: defaultdict(dict))
     for r in images:
         if r[rule] is not None:
@@ -65,11 +65,14 @@ def features(images, tape, rule):
         A, M, G = [], [], []
         for h in by_height.values():
             rows_total += 1
+            front = [h[p] for p in r5.FRONT_BACK if p in h]
             diag = [h[p] for p in r5.DIAGONAL if p in h]
-            if "A" not in h or not diag or 2 * np.mean(diag) ** 2 <= h["A"] ** 2:
+            if not front or not diag:
+                continue
+            a, m = float(np.mean(front)), float(np.mean(diag))
+            if 2 * m ** 2 <= a ** 2:
                 continue
             rows_kept += 1
-            a, m = h["A"], float(np.mean(diag))
             A.append(a)
             M.append(m)
             G.append(r5.ramanujan(a, math.sqrt(2 * m ** 2 - a ** 2)))
@@ -105,11 +108,9 @@ def score(feats, tape, feature_set):
     y = np.array([tape[s]["waist"] for s in subjects])
     X_base = np.array([[tape[s]["stature"], tape[s]["weight"], tape[s]["sex"] == "M", tape[s]["age"]]
                        for s in subjects], float)
-    W = np.array([[tape[s]["weight"]] for s in subjects])
     F = {g: np.array([feats[(s, g)][feature_set] for s in subjects]) for g in r5.OUTFITS}
     p_base = oof(X_base, y, CV_SEED)
     p = {g: oof(np.hstack([X_base, F[g]]), y, CV_SEED) for g in r5.OUTFITS}
-    p_w = {g: oof(np.hstack([W, F[g]]), y, CV_SEED) for g in r5.OUTFITS}
     e_base = ape(p_base, y)
     idx = np.random.default_rng(BOOT_SEED).integers(0, len(y), size=(N_BOOT, len(y)))
     boot_base = e_base[idx].mean(axis=1)
@@ -123,16 +124,11 @@ def score(feats, tape, feature_set):
     block = {"n_subjects": len(subjects), "mape_baseline": float(e_base.mean()), "rmse_baseline": rmse(p_base, y),
              "per_outfit": {}}
     for g in r5.OUTFITS:
-        e_w = ape(p_w[g], y)
         row = {"mape": float(ape(p[g], y).mean()), "rmse": rmse(p[g], y),
                "reduction_pp": reduction[g], "reduction_ci95": ci(boot_reduction[g]),
                "reduction_rmse_cm": block["rmse_baseline"] - rmse(p[g], y),
                "reduction_rmse_cm_ci95": ci(boot_rmse(p_base, y, idx) - boot_rmse(p[g], y, idx)),
-               "reduction_pp_range_seeds_1_9": [min(spread[g]), max(spread[g])],
-               # the weight-and-widths model: weight and the widths alone, two of the three kinds of input of Feng
-               # et al.'s model
-               "weight_widths_mape": float(e_w.mean()),
-               "weight_widths_minus_baseline_ci95": ci(e_w[idx].mean(axis=1) - boot_base)}
+               "reduction_pp_range_seeds_1_9": [min(spread[g]), max(spread[g])]}
         if g != r5.SUIT:
             row["shortfall_pp"] = reduction[r5.SUIT] - reduction[g]
             row["shortfall_ci95"] = ci(boot_reduction[r5.SUIT] - boot_reduction[g])

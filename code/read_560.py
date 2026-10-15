@@ -23,10 +23,18 @@ OUTFITS = [SUIT] + OWN_CLOTHES
 CAMERAS_PER_PILLAR = 4  # the guide, 제작 도구: 총 8각으로 한 각(기둥)에 4대의 카메라로 구성
 PILLARS = "ABCDEFGH"  # the guide's 8 pillars, named in the order of their camera numbers (sec:rig)
 CAMERAS = CAMERAS_PER_PILLAR * len(PILLARS)  # the guide: DSLR 32대
-DIAGONAL = ("B", "D", "F", "H")  # MEASURED by rig.py: ±45° and ±135° from A, which the subject faces
-# CHOSEN: the frontal half-width from A alone, because E sees the same extent from behind
-WIDTH_PILLARS = ("A",) + DIAGONAL
+FRONT_BACK = ("A", "E")  # MEASURED by rig.py: 0° and 180° from A, which the subject faces
+DIAGONAL = ("B", "D", "F", "H")  # MEASURED by rig.py: ±45° and ±135° from A
+# CHOSEN: one definition for both half-widths, each the mean over every pillar that sees it: a over the two pillars on
+# the front-back axis, of which E sees A's extent from behind, and m over the four diagonal pillars, of which D and F
+# see the extents of H and B from behind
+WIDTH_PILLARS = FRONT_BACK + DIAGONAL
 SCALE_RULES = ("shod_own_clothes", "shod_always", "barefoot_always")  # which images add 신발굽높이 to 키
+# The foot polygons under each spelling that the label files use, mapped to the foot: of the standing-pose files that
+# carry 머리 and 몸통, pillar A names the feet 오른쪽발/왼쪽발 in 3,675, B in 2,212, D in 5,302 and H in 3,260, and
+# 오른발/왼발 in the rest; no file uses both. Pillars C, E, F and G use 오른발/왼발 only, and 21,056 of pillar E's files
+# carry no foot polygon under either spelling.
+FOOT_LABELS = {"오른발": "right", "왼발": "left", "오른쪽발": "right", "왼쪽발": "left"}
 POOL = 12  # worker processes; the result does not depend on it
 
 def pillar_of(camera):
@@ -104,7 +112,7 @@ def heel_for(t, outfit, rule):
     return 0.0 if outfit == SUIT else t["heel"]
 
 def read_zip(args):
-    """Per image of the standing pose in pillars A, B, D, F and H: the height in pixels (top of 머리 to the bottom of
+    """Per image of the standing pose in the pillars of WIDTH_PILLARS: the height in pixels (top of 머리 to the bottom of
     the lower foot), and under each scale rule the torso polygon's half-width at the waist level in units of the height
     in pixels. The waist level sits at (허리높이 + heel) / (키 + heel) of the height in pixels above the bottom of the
     feet."""
@@ -123,7 +131,7 @@ def read_zip(args):
             if not raw:
                 continue
             L = {x["polygon"]["label"]: pts(x["polygon"]["location"]) for x in json.loads(raw)["labelingInfo"]}
-            feet = [L[k] for k in ("오른발", "왼발") if k in L]
+            feet = [L[k] for k in FOOT_LABELS if k in L]
             if "머리" not in L or "몸통" not in L or not feet:
                 continue
             top, bottom = L["머리"][:, 1].min(), max(F[:, 1].max() for F in feet)

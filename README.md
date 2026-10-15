@@ -4,8 +4,9 @@ Analysis code and data for a short communication on the dataset *Whole Body Shap
 Koreans*, which AI Hub lists as 한국인 전신 형상 및 치수 측정 데이터(성인).
 In the dataset, each subject was photographed in a measurement suit and in five outfits of the subject's own clothes,
 and the waist girth was measured with a tape. Adding the waist widths to a regression of the tape waist girth on
-stature, weight, sex and age lowers the regression's error in the measurement suit, and lowers it by a small fraction
-of that in the subjects' own clothes; the manuscript's Results give the numbers.
+stature, weight, sex and age lowers the regression's error in the measurement suit; in the subjects' own clothes the
+reduction is a small fraction of that, and its 95% confidence interval includes zero when stature and weight are
+measured. The manuscript's Results give the numbers.
 
 ## Layout
 
@@ -29,7 +30,9 @@ distributes them; no image file is read.
 ## Reproduce
 
 1. Install the packages: `pip install -r requirements.txt` (Python 3.12).
-2. Run every stage: `AIHUB_ROOT=<download directory> ./reproduce.sh`. The stages are deterministic.
+2. Run every stage: `AIHUB_ROOT=<download directory> ./reproduce.sh`. The stages are deterministic: with the
+   packages that requirements.txt pins, they rewrite results/ and the generated files in paper/ byte for byte on
+   Linux (checked with Python 3.12.15); another platform or library version can change the last digits of results/.
 3. The run checks every number in the manuscript against results/ with `pytest test_assertions.py`, then builds
    paper/main.pdf and paper/supplement.pdf. One check fetches this repository's main branch and compares it with the
    checkout, so it needs a network connection.

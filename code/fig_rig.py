@@ -1,11 +1,12 @@
 """Writes paper/fig_rig.pdf, the figure of the camera rig and the waist widths (sec:rig, sec:features).
 
 (a) The rig seen from above: the eight pillars at their angles from the subject's front, each labeled with the ratio
-    that rig.py measures, the median lower-leg distance relative to pillar A's, signed by the leg order. The ratio is
-    close to cos θ, the length at which a camera at angle θ from the front sees a horizontal distance across the front.
+    that rig.py measures, the pillar's leg offset (the mean over its cameras of each camera's median leg offset in the
+    measurement suit) divided by pillar A's. The ratio is close to cos θ, the length at which a camera at angle θ from
+    the front sees a horizontal distance across the front.
 (b) A front view: the height in pixels, the waist level and the torso polygon's horizontal extent at that level.
-(c) The waist section seen from above as an ellipse with semi-axes a and b: the half-width that pillar A sees, and the
-    half-width m that a diagonal pillar sees, with 2m² = a² + b².
+(c) The waist section seen from above as an ellipse with semi-axes a and b: the half-width a that pillars A and E see,
+    and the half-width m that a diagonal pillar sees, with 2m² = a² + b².
 Panel (a) prints results/rig.json; panels (b) and (c) are schematic, and no number of the analysis reads their
 shapes. test_assertions.py regenerates the file and compares the bytes.
 """
@@ -89,9 +90,7 @@ def front_view(ax):
         ax.add_patch(patch)
     ax.plot([0.10, 0.34], [WAIST_LEVEL, WAIST_LEVEL], ls="--", lw=0.6, color=MID)
     ax.plot([-0.10, 0.10], [WAIST_LEVEL, WAIST_LEVEL], lw=2.0, color=INK, solid_capstyle="butt")
-    ax.annotate("", xy=(-0.10, WAIST_LEVEL + 0.10), xytext=(0.10, WAIST_LEVEL + 0.10),
-                arrowprops={"arrowstyle": "<->", "lw": 0.6, "shrinkA": 0, "shrinkB": 0})
-    ax.text(0.0, WAIST_LEVEL + 0.12, "2a", fontsize=FONT_PT, ha="center", va="bottom", style="italic")
+    ax.text(0.0, WAIST_LEVEL + 0.015, "2a", fontsize=FONT_PT, ha="center", va="bottom", style="italic")
     ax.annotate("torso polygon", xy=(0.125, 0.79), xytext=(0.17, 1.04), fontsize=SMALL_PT, ha="left", va="center",
                 arrowprops={"arrowstyle": "-", "lw": 0.5, "shrinkA": 1, "shrinkB": 0})
     for y in (FIGURE_TOP, 0.0):

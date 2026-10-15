@@ -1,6 +1,7 @@
 %% vancouver-sage.bst: vancouver.bst (TeX Live) with the author list of Sage Vancouver, the reference style of
 %% Textile Research Journal: up to three authors, joined by "and" before the last, and the first three followed by
-%% "et al." where there are more. Renamed as the LaTeX Project Public License requires of a modified file.
+%% "et al." where there are more, and each reference's DOI after "DOI: ", as the journal's published reference lists
+%% print it. Renamed as the LaTeX Project Public License requires of a modified file.
 %% This `vancouver.bst' bibliographic style file (for LaTeX/BibTeX) is
 %% generated with the docstrip utility and modified manually to meet the
 %% ``Uniform Requirements for Manuscripts Submitted to Biomedical Journals''
@@ -96,9 +97,9 @@ FUNCTION {init.config.constants}
   "http://arxiv.org/abs/" 'eprinturl := % prefix to make URL from eprint ref
   "arXiv:" 'eprintprefix := % text prefix printed before eprint ref
   "http://dx.doi.org/" 'doiurl := % prefix to make URL from DOI
-  "doi:" 'doiprefix := % text prefix printed before DOI ref
+  "DOI: " 'doiprefix := % text prefix printed before DOI ref
   #0 'addeprints := % 0=no eprints; 1=include eprints
-  #0 'adddoiresolver := % 0=no DOI resolver; 1=include it
+  #1 'adddoiresolver := % 0=no DOI resolver; 1=include it
   #0 'hrefform := % 0=no crossrefs; 1=hypertex xrefs; 2=hyperref refs
 }
 INTEGERS {

@@ -28,14 +28,16 @@
 
 \begin{abstract}
 Garment customization can obtain girths from photographs instead of a tape measure. Recent models predict girths from weight and the body's widths and depths in photographs of dressed people. A regression on
-stature, weight, sex and age, which a customer can report without a photograph, also predicts girth, so the
+stature, weight, sex and age, four inputs that a customer can report without a photograph, also predicts girth, so the
 photographs' contribution is the reduction in error relative to that regression. Whether clothing changes that contribution can be measured on a Korean dataset
-whose adults were tape-measured and photographed in a close-fitting measurement suit and in five of their own outfits. We added two waist widths of torso polygons that labelers drew in the photographs, seen from the front and at $45^\circ$ to it, to a linear regression of the tape-measured waist girth
-on stature, weight, sex and age, and scored both regressions on subjects not used to fit them. The widths lowered the mean absolute
-percentage error by \redSuit\ percentage points in the suit but by \redOwnMin--\redOwnMax\ in each own outfit. The
-suit's reduction exceeded each own outfit's under each assumption about shoe heels in converting pixels to centimeters,
-and with an ellipse's girth in place of the widths. A regression on weight and the own outfits' two widths, which
-stand in for the recent models' inputs with a diagonal width for the depth, predicted the girth less accurately than the regression without photographs.
+whose adults were tape-measured and photographed in a close-fitting measurement suit and in five of their own outfits. We extended a linear regression of the tape-measured waist girth on stature, weight, sex and age with two
+waist widths of torso polygons that labelers drew in the photographs, one seen from the front and one at $45^\circ$ to
+the front. We measured both regressions' errors on subjects not used to fit them. The widths lowered the mean absolute
+percentage error by \redSuit\ percentage points in the suit, with a \ciLevel\% confidence interval above zero, but by
+\redOwnMin--\redOwnMax\ in the own outfits, where each interval includes zero when stature and weight are measured.
+The suit's reduction exceeded each own
+outfit's reduction, also when the widths entered the regression as the girth of an ellipse fitted to them and under
+each rule that we tested for converting the widths from pixels to centimeters.
 Studies predicting waist girth from dressed photographs therefore need to report the error of the regression without
 photographs on the same subjects.
 \end{abstract}
@@ -45,117 +47,107 @@ photographs on the same subjects.
 \label{sec:intro}Mass customization of garments needs each customer's body dimensions. Measurement from
 two-dimensional photographs obtains body dimensions remotely and without contact.\cite{zhang2025} A 2025 systematic
 review of photograph-based body measurement named the restriction to a nude body or to tight-fitting clothing as a
-limitation of the reviewed methods, and named estimation from the dressed body as a feasible approach for future
-work.\cite{zhang2025}
+limitation of the reviewed methods.\cite{zhang2025}
 
 Girths can be predicted from photographs of dressed people or without any photograph, from stature and weight. Feng et
 al.\cite{feng2026} predicted young men's chest, waist and hip girths from photographs in which the men wore regular
 shirts that were not overly loose. Their best models, linear regressions chosen among several sets of inputs and
 algorithms, combined body weight with the body's width and depth in the photographs. Bartol et al.\cite{bartol2022}
 predicted body measurements from stature and weight alone, by a linear regression that they fitted for each sex to a
-dataset of three-dimensional body shapes reconstructed from body scans. On the body-shape dataset, the regression predicted
+dataset of three-dimensional body shapes reconstructed from body scans. On that dataset, the regression predicted
 the waist girth with a lower mean absolute error than two methods that estimate the body shape from images. Bartol et al.\ proposed the regression as the baseline for later methods of body measurement.
 
 Part of the accuracy that a model on dressed photographs reaches can therefore come from inputs that need no
 photograph, such as weight. Every model that Feng et al.\ compared, across their sets of inputs and their algorithms,
 used the widths and depths measured in the photographs, so the errors of those models do not show how much of the
 accuracy the photographs supply. The photographs' contribution is the reduction in error, on the same subjects, when
-widths measured in the photographs are added to a regression on stature, weight, sex and age. A customer can report all four inputs without a
-photograph, because customers can estimate their own stature and weight.\cite{bartol2022} The photographs' contribution may also depend on clothing, the condition that restricts the reviewed methods.\cite{zhang2025} Measuring how clothing changes the
-contribution requires subjects who were photographed both in minimal clothing and in everyday clothing and whose girths
-were measured with a tape.
+widths measured in the photographs are added to a regression on stature, weight, sex and age, the four inputs that a
+customer can report without a photograph because customers can estimate their own stature and weight.\cite{bartol2022} The
+photographs' contribution may also depend on clothing, because the methods that the 2025 review covered work only on a
+nude body or in tight-fitting clothing.\cite{zhang2025} Measuring how clothing changes the contribution requires subjects who were photographed both in
+minimal clothing and in everyday clothing and whose girths were measured with a tape.
 
-A Korean dataset that a government data portal distributes on application holds the photographs and the tape
-measurements that measuring the effect of clothing requires.\cite{aihub560} The dataset holds tape measurements of
-about \subjectsPlanned\ adults and photographs of the adults, taken from \pillarsTotal\ directions, in a close-fitting
-measurement suit, which serves as minimal clothing, and in five outfits of the adults' own clothes. Labelers drew polygons around body parts in the photographs. The torso's polygon, on which widths can
-be measured, rarely appears in photographs taken from the sides and mostly does not reach the hip, and the dataset gives
-no height at which to locate the chest. We therefore added two waist widths, seen from the front and at $45^\circ$ to
-the front, to a regression of the tape-measured waist girth on stature, weight, sex and age, and compared the reduction in error that the suit's widths bring with the reduction that
-each own outfit's widths bring. The widths lowered the regression's mean absolute percentage error by \redSuit\
-percentage points in the suit and by \redOwnMin--\redOwnMax\ percentage points in the own outfits. A regression on
-weight and the own outfits' two widths, which takes the diagonal width in place of Feng et al.'s depth, predicted the
-girth less accurately than the regression on stature, weight, sex and age.
+We measured how clothing changes the photographs' contribution on a Korean dataset that a government data portal
+distributes on application.\cite{aihub560} The dataset holds tape measurements of about \subjectsPlanned\ adults and
+photographs of them from \pillarsTotal\ directions, both in a close-fitting measurement suit as minimal clothing and in
+five outfits of their own clothes. Labelers drew polygons around body parts in the photographs. The torso's polygon is
+missing from almost every photograph taken from the subject's sides, the photographs that show the torso's depth, so the
+polygon gives widths but no depths. The dataset gives the heights above the floor that locate the waist and the hip in
+the photographs but none for the chest. In most photographs taken from the front, the torso's polygon does not span the
+hip's level, so we measured the polygon at the waist. We added the frontal
+and the diagonal waist width of the torso's polygon, seen from the front and at $45^\circ$ to the front, to a regression of the tape-measured waist girth on stature,
+weight, sex and age. We compared the reduction in error that the suit's widths bring with the reduction that each own
+outfit's widths bring. The widths lowered the regression's mean absolute percentage error by \redSuit\
+percentage points in the suit, with a \ciLevel\% confidence interval above zero, but by \redOwnMin--\redOwnMax\
+percentage points in the own outfits, where each interval includes zero when stature and weight are measured. The
+suit's reduction exceeded each own outfit's
+reduction in every variant of the analysis that we ran.
 
 \section{Materials and methods}\label{sec:methods}
 
 \subsection{Data}\label{sec:data}
 
-The dataset Whole Body Shape and Dimension Measurement Data for Koreans, built in \buildYear, holds photographs and body
-dimensions of Korean adults.\cite{aihub560} AI Hub, a data portal of the Korean government, distributes the
+The dataset Whole Body Shape and Dimension Measurement Data for Koreans holds photographs and body dimensions of Korean
+adults.\cite{aihub560} AI Hub, a data portal of the Korean government, distributes the
 dataset on application. The dataset's creators recruited about \subjectsPlanned\
-adults, men and women in equal numbers. Trained measurers marked landmarks on each subject. They measured heights with
-an anthropometer (a graduated vertical rod), girths with a tape measure and weight with a digital scale. The waist girth
+adults, men and women in equal numbers. Trained measurers marked landmarks on each subject. The waist girth
 is the horizontal circumference through the waist's side points, which lie at the natural indentation of the waist. The
 measurers read the waist girth at mid-breath with the subject standing upright. The waist height, which locates the
 waist in the photographs, is the vertical distance from the floor to a landmark that the measurers marked as the waist
-point. Each subject's record also holds stature, weight, sex and age, and the heel height of the subject's shoes, which
-raises the subject in photographs taken in shoes.
+point. Each subject's record also holds stature, weight, sex and age. The record also holds the heel height of the
+subject's shoes, which raises the subject in photographs taken in shoes.
 
 The creators photographed each subject in six outfits and six poses with \camerasTotal\ digital single-lens reflex
-cameras, \camerasPerPillar\ at different heights on each of \pillarsTotal\ pillars around the subject. A
-photograph's pillar sets the direction from which the photograph shows the waist. The creators supplied a measurement suit, which they chose
+cameras, \camerasPerPillar\ at different heights on each of \pillarsTotal\ pillars around the subject. The creators supplied a measurement suit, which they chose
 so as not to distort the body. The subjects brought the other five outfits from their own clothes: two for spring or
-autumn, two for summer and one for winter without thick outerwear. Labelers drew polygons around body parts in each
-photograph, including the head, the torso, the lower legs and the feet. We used the photographs of the standing
+autumn, two for summer and one for winter without thick outerwear. Labelers drew polygons around body parts in the
+photographs, including the head, the torso, the lower legs and the feet. We used the photographs of the standing
 pose, in which the subject stands at attention. Of the \nTapeSubjects\ subjects whose records hold every value that the
 analysis uses, \nPhotographedSubjects\ appear in the standing photographs.
 
 \subsection{Camera positions and scale}\label{sec:rig}
 
 Measuring the widths seen from the front and at $45^\circ$ needs each pillar's angle around the subject, but the
-dataset does not record the pillars' angles. We inferred the angles from the lower legs in the measurement suit's
-standing photographs (Figure~\ref{fig:rig}(a)). The dataset's file names number the cameras from 1 to
-\camerasTotal, \camerasPerPillar\ to a pillar. We name the pillars A to H in the order of their camera numbers, so
-pillar A holds cameras 1--\camerasPerPillar. Because a photograph's scale differs between cameras, we measure distances in units of the subject's
-height in pixels, the vertical distance from the top of the head polygon to the lowest point of the foot polygons. The
-leg offset, in these units, is the mean horizontal coordinate of the right lower-leg polygon's vertices minus the mean
-horizontal coordinate of the left lower-leg polygon's vertices. For each camera, we took the median of the leg offset over
-subjects. For each pillar, we averaged the cameras' medians over the pillar's cameras.
-
-The leg offset is negative in pillar A, which means that the subject's right leg appears on the left of the image. The
-subject therefore faces pillar A. A camera at the angle $\theta$ from the subject's front sees a horizontal distance
-across the front shortened to $\cos\theta$ times its length. The ratio of a pillar's leg offset to pillar A's leg offset
-is therefore about 0.71 at $\pm45^\circ$, 0 at $\pm90^\circ$, $-0.71$ at $\pm135^\circ$ and $-1$ at $180^\circ$. The
-measured ratio is positive in pillars B and H and negative in pillars D, E and F (Figure~\ref{fig:rig}(a)). In absolute
-value, the measured ratio is \legRatioDiagMin--\legRatioDiagMax\ in pillars B, D, F and H, \legRatioRear\ in pillar
-E and at most \legRatioSideMax\ in pillars C and G. The ratios therefore place pillars B and H at $\pm45^\circ$ from the subject's
-front, pillars D and F at $\pm135^\circ$, pillars C and G at $\pm90^\circ$ and pillar E at $180^\circ$. A line of sight
-at $\pm135^\circ$ from the front lies at $45^\circ$ to the subject's front-back axis, as one at $\pm45^\circ$ does,
-so the lines of sight of the four diagonal pillars B, D, F and H all lie at $45^\circ$ to that axis.
+dataset does not record the pillars' angles. The dataset's file names number the cameras from 1 to \camerasTotal,
+\camerasPerPillar\ to a pillar. We name the pillars A to H in the order of their camera numbers, so pillar A holds
+cameras 1--\camerasPerPillar. Because a photograph's scale differs between cameras, we measure distances in units of
+the subject's height in pixels, the vertical distance from the top of the head polygon to the lowest point of the foot
+polygons. We inferred each pillar's angle from the leg offset (the horizontal position of the subject's right lower
+leg minus that of the left lower leg) in the measurement suit's standing photographs, because a camera at the angle
+$\theta$ from the subject's front sees the leg offset shortened to $\cos\theta$ times its length
+(Section~\ref{S-sec:rigangles} in the Supplementary Material). The offsets
+place pillar A in front of the subject, pillars B and H at $\pm45^\circ$ from the front, pillars D and F at
+$\pm135^\circ$, pillars C and G at $\pm90^\circ$ and pillar E at $180^\circ$ (Figure~\ref{fig:rig}(a)). A line of
+sight at $\pm135^\circ$ from the front lies at $45^\circ$ to the subject's front-back axis, as one at $\pm45^\circ$
+does, so the lines of sight of the four diagonal pillars B, D, F and H all lie at $45^\circ$ to that axis.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{fig_rig}
 \caption{The camera rig and the waist widths. (a) The \pillarsTotal\ pillars seen from above, with the subject's front toward
-pillar A. The leg offset is the mean horizontal coordinate of the right lower-leg polygon's vertices minus the same mean for
-the left lower-leg polygon, divided by the subject's height in pixels, the height from the head's top to the feet's lowest point.
-The number under each pillar is the mean over the pillar's cameras of each camera's median leg offset in the
-measurement suit, divided by the same mean for pillar A, and is negative where the legs appear in the opposite order to pillar A's photographs. Filled squares mark the pillars whose
-photographs give the widths. The figure draws the pillars in the order of their camera numbers, because
-the leg offsets fix each pillar's angle from the subject's front but not whether the pillar stands on the subject's left
-or right side. (b) A front view, in which the waist level lies above the feet's lowest point by the fraction
-$(h + e)/(H + e)$ of the height in pixels, where $h$ is the waist height, $H$ the stature and $e$ the heel height that
-the scale rule adds for the outfit. The torso polygon's extent at that level is $2a$. (c) The waist section seen from above as an ellipse with semi-axes
-$a$ and $b$. A camera sees the half-width between two tangents parallel to its line of sight: $a$ from pillar A, and $m$
-from each diagonal pillar, such as pillar B. The two half-widths satisfy $2m^2 = a^2 + b^2$. Panels (b) and (c) are schematic.}
+pillar A. The number under each pillar is the pillar's leg offset in the measurement suit divided by pillar A's.
+Filled squares mark the pillars whose
+photographs give the widths. (b) A front view, in which the waist level lies above the feet's lowest point by the fraction
+$(h + e)/(H + e)$ of the height in pixels, where $h$ is the waist height, $H$ the stature and $e$ the heel height added
+to the stature in the outfit. The thick bar labeled $2a$ is the torso polygon's extent at that level. (c) A horizontal section through the waist, drawn as
+an ellipse with semi-axes $a$ and $b$. A camera sees the width between the two tangents to the section that run parallel to
+its line of sight. Half that width is $a$ for pillars A and E, whereas for each diagonal pillar, such as pillar B, it is $m$. Panels (b) and (c) are schematic.}
 \label{fig:rig}
 \end{figure}
 
-To test whether the subjects wore shoes, we paired each own-outfit photograph of a subject with the same camera's
-photograph of the subject in the measurement suit. For each pair, we divided the height in pixels in the outfit
-by the height in pixels in the suit. For each own outfit, we took the median of this ratio over the pairs. The median exceeds 1 by
-\statureGainMin--\statureGainMax\% in the five outfits, whereas the recorded heel height has a median of
-\heelMedianCm~cm and a median of \heelShareMedian\% of stature over the subjects. We therefore take the subjects to have
-stood barefoot in the measurement suit and in shoes in their own outfits, although the shoes raised the subjects less
-than the recorded heel height. A length in centimeters is $S$ times the length in a photograph divided by the subject's
-height in pixels, where $S$ is the subject's height in centimeters as photographed, shoes included. Three scale
-rules, which differ in their assumptions about shoes, set $S$. Under the primary scale rule, which uses the only measure of
-the shoes that the records give, $S$ is the measured stature in the suit and the stature plus the recorded heel height
-in the subject's own outfits. Adding the heel height in every outfit shows whether a result depends on the subjects'
-being barefoot in the suit. In the own outfits, adding no heel height gives a lower bound on the rise that the shoes
-caused, and the primary rule gives an upper bound. A result that holds under all three scale rules therefore depends
-neither on the subjects' being barefoot in the suit nor on how much the shoes raised them.
+A length in centimeters is $S$ times the length in a photograph divided by the subject's height in pixels, where $S$ is
+the subject's height in centimeters as photographed, shoes included. $S$ therefore depends on whether a subject wore shoes.
+Over pairs of photographs from one camera (Section~\ref{S-sec:rigangles} in the Supplementary Material), a subject's
+height in pixels rises from the measurement suit to an own outfit by a median of \statureGainMin--\statureGainMax\% in
+each of the five outfits. The recorded heel height, by contrast, has a median of \heelShareMedian\% of stature over the subjects. We
+therefore take the subjects to have worn shoes in their own outfits and to have stood barefoot in the measurement suit,
+although the shoes raised the subjects less than the recorded heel height. Because each subject's rise in shoes is unknown, three scale rules set $S$, each with its own assumption about the shoes.
+Under the
+primary scale rule, $S$ is the measured stature in the suit, and in the subject's own outfits it is the stature plus the
+recorded heel height. A second rule adds the heel height in
+every outfit, to show whether a result depends on the subjects' being barefoot in the suit. A third rule adds no heel
+height in any outfit. In the own outfits, the third rule gives a lower bound on the rise that the shoes caused, whereas
+the primary rule gives an upper bound.
 
 \subsection{Waist widths}\label{sec:features}
 
@@ -166,29 +158,29 @@ pillar A's standing photographs per outfit. The records give no height for the b
 girth passes. The analysis therefore measures the torso polygon at the waist.
 
 The two waist widths that the analysis adds to stature, weight, sex and age come from the standing photographs of
-pillars A, B, D, F and H that show the torso and, for the height in pixels, the head and a foot. We took the frontal
-half-width from pillar A alone and did not use pillar E, which sees the same extent from behind. Let $h$ be the
+pillars A, B, D, E, F and H that show the head, a foot and the torso. Let $h$ be the
 measured waist height, $H$ the measured stature and $e$ the heel height that the scale rule adds for the outfit. In each
 photograph, the waist level lies above the lowest point of the feet by the fraction $(h + e)/(H + e)$ of the subject's
 height in pixels (Figure~\ref{fig:rig}(b)). The half-width is the torso polygon's horizontal extent at the waist level,
-divided by twice the height in pixels. For each of the \camerasPerPillar\ camera heights, $a$ is pillar A's half-width and $m$ the
-mean of the half-widths that the diagonal pillars give.
+divided by twice the height in pixels. For each of the \camerasPerPillar\ camera heights, $a$ is the mean of the
+half-widths that pillars A and E give from the front and from behind, and $m$ the mean of the half-widths that the four
+diagonal pillars give. Pillar E gives a half-width in only \footImagesE\ of its standing photographs that
+show the torso, because the others lack the head or a foot, so $a$ rests almost entirely on pillar A.
 
-A sensitivity analysis replaces the two widths with the girth of an ellipse fitted to the half-widths, to test whether
-the photographs' contribution depends on the form in which the half-widths enter the regression. An ellipse with
+A sensitivity analysis replaces the two widths with the girth of an ellipse that has the measured half-widths, to test
+whether the photographs' contribution depends on the form in which the half-widths enter the regression. An ellipse with
 the semi-axis $a$ from side to side and the semi-axis $b$ from front to back has the half-width
 $\sqrt{a^2\cos^2\theta + b^2\sin^2\theta}$ seen at the angle $\theta$ from the front, so its half-width $m$ seen at
 $45^\circ$ satisfies $2m^2 = a^2 + b^2$ (Figure~\ref{fig:rig}(c)). The waist section therefore matches such an ellipse only
-when $2m^2 > a^2$. The ellipse's semi-axis $b$ is then $\sqrt{2m^2 - a^2}$. For each subject and outfit, we kept a camera height's half-widths when two conditions hold: pillar A and at least one
-diagonal pillar give a half-width at that camera height, and $2m^2 > a^2$. The analysis with the widths and the
-sensitivity analysis therefore use the same photographs and differ only in how the half-widths enter the regression.
+when $2m^2 > a^2$. The ellipse's semi-axis $b$ is then $\sqrt{2m^2 - a^2}$. For each subject and outfit, we kept a camera height's half-widths when pillar A or pillar E gives a half-width at that
+camera height, when a diagonal pillar also gives one, and when $2m^2 > a^2$. The analysis with the widths and the
+sensitivity analysis use the same kept half-widths and differ only in how the half-widths enter the regression.
 
 The kept camera heights give each subject's widths and ellipse girth in each outfit. For each subject and outfit, the
 frontal width is $2\bar{a}S$ and the diagonal width $2\bar{m}S$ in centimeters, where the bar denotes the mean over the
 kept camera heights. A subject has widths in an outfit when at least one of the subject's camera heights in that outfit
 is kept, which under the primary scale rule holds for \nSuitSubjects\ subjects in the measurement suit and for
-\nOwnSubjectsMin--\nOwnSubjectsMax\ subjects in each own outfit. The subjects with widths in all six outfits enter the
-models. The ellipse girth is $S$ times the mean, over the kept camera heights, of Ramanujan's approximation to the
+\nOwnSubjectsMin--\nOwnSubjectsMax\ subjects in each own outfit. The ellipse girth is $S$ times the mean, over the kept camera heights, of Ramanujan's approximation to the
 perimeter of the ellipse with semi-axes $a$ and $b$,\cite{ramanujan1914}
 \begin{equation}
 \pi\bigl[3(a + b) - \sqrt{(3a + b)(a + 3b)}\bigr].
@@ -199,92 +191,77 @@ analysis. The main variant uses the primary scale rule with the widths.
 \subsection{Models and statistics}\label{sec:models}
 
 The baseline model regresses the tape-measured waist girth on stature, weight, sex and age by ordinary least squares,
-which scikit-learn (version \sklearnVersion) fits.\cite{pedregosa2011} For each outfit, the width model adds that
-outfit's two widths to the baseline model's inputs. The weight-and-widths model regresses the girth on Feng et al.'s
-inputs with the diagonal width in place of the depth, namely weight and the outfit's two widths.\cite{feng2026} All models are linear, as are the
-best models of Feng et al.\ and the models of Bartol et al.,\cite{bartol2022} so that the comparisons concern the inputs and not the form of
-the model. The subjects who enter the models depend on the scale rule, because the rule moves the waist level and so
-changes which subjects have widths. \nSubjects\ subjects have widths in all six outfits under each scale rule that adds
-a heel height, and \nSubjectsNoHeel\ subjects under the rule that adds none. Every model is fitted and scored on the
-subjects who have widths in all six outfits under its scale rule.
+which the scikit-learn library (version \sklearnVersion) fits.\cite{pedregosa2011} For each outfit, the width model adds that
+outfit's two widths to the baseline model's inputs. All models are linear, so that a difference in error
+between two models comes from their inputs and not from the form of the model. The best models of Feng
+et al.\cite{feng2026} and the models of Bartol et al.\cite{bartol2022} are linear too, so the comparison keeps their form of model. Under each scale rule, the models use
+only the subjects who have widths in all six outfits, so that every outfit's reduction is measured on the same subjects. The subjects
+can differ between the scale rules because a rule moves the waist level and so changes which subjects have widths. \nSubjects\ subjects have widths in
+all six outfits under each scale rule that adds a heel height, and \nSubjectsNoHeel\ subjects under the rule that adds
+none.
 
 To score every model on subjects that its fit did not use, we used scikit-learn's KFold to split the subjects at random
 into \nFolds\ folds, groups of nearly equal size. Each fold's girths are predicted by a model fitted on the other folds.
-Under each scale rule, every model uses the same split, so that a difference between two models does not depend on the
-split.
+Under each scale rule, every model uses the same split, so that any two models are compared on
+identical folds.
 
 The mean absolute percentage error (MAPE), the mean over subjects of $100|\hat{y} - y|/y$, where $y$ is the
 tape-measured girth and $\hat{y}$ the prediction, measures each model's error. An outfit's reduction, the photographs'
 contribution in that outfit, is the baseline model's MAPE minus the width model's MAPE for that outfit, in percentage
-points (pp). A positive reduction means that the widths lower the error. For each own outfit, the shortfall, the part of
-the photographs' contribution that the clothing removes, is the measurement suit's reduction minus that outfit's
-reduction. The reduction in the root-mean-square error (RMSE), which gives the error in centimeters, is reported beside
-the reduction in MAPE. Every difference is computed before rounding.
+points (pp). A positive reduction means that the widths lower the error. The shortfall, the part of the photographs'
+contribution that the clothing removes, is the measurement suit's reduction minus an own outfit's reduction. The
+reduction in the root-mean-square error (RMSE), which gives the error in centimeters, is reported beside the reduction
+in MAPE. Every difference is computed before rounding.
 
-The confidence intervals come from bootstrap resamples, each of which draws subjects with replacement and recomputes
+We computed confidence intervals from bootstrap resamples, each of which draws subjects with replacement and recomputes
 every MAPE and RMSE from the subjects' existing predictions, so every difference between two models compares their
-errors on the same resampled subjects. The \ciLevel\% confidence interval of a difference in MAPE or in RMSE spans the \ciLowerPct{}th to \ciUpperPct{}th percentiles of
-the difference over \nBoot\ such resamples,\cite{efron1993} which NumPy (version \numpyVersion) draws.\cite{harris2020}
-The reductions are also recomputed under \nPartitionSeeds\ further random splits into folds, to measure how much the
-reductions depend on the split. Because a customer reports stature and weight with error, a further analysis adds to both the self-report errors that
-Bartol et al.\ assumed, normal with standard deviations of \selfReportSdCm~cm and
-\selfReportSdKg~kg,\cite{bartol2022} and repeats the main variant's baseline and width models and its bootstrap for \nDraws\ random draws of the
-errors.
+errors on the same resampled subjects. The \ciLevel\% confidence interval of a difference in MAPE or in RMSE spans the
+\ciLowerPct{}th to \ciUpperPct{}th percentiles of the difference over \nBoot\ such resamples,\cite{efron1993} which
+NumPy (version \numpyVersion) draws.\cite{harris2020} The reductions are also recomputed under \nPartitionSeeds\
+further random splits into folds, to measure how much the reductions depend on the split (Table~\ref{S-tab:sensitivity}
+in the Supplementary Material).
 
 \section{Results and discussion}\label{sec:results}
 
-The baseline model predicts the tape-measured waist girth with an MAPE of \mapeBaseline\% and an RMSE of \rmseBaseline~cm
-without any photograph. In the measurement suit, the widths lower the MAPE by \redSuit~pp, and in the subjects' own
-clothes they lower it by \redOwnMin--\redOwnMax~pp (Table~\ref{tab:outfits}). The \ciLevel\% confidence interval of each own
-outfit's reduction lies above zero. The shortfall is \shortfallMin--\shortfallMax~pp in the five outfits, so the
-subjects' own clothes remove most of the suit's reduction. The \ciLevel\% confidence interval of each outfit's shortfall lies
-above zero. Under the \nPartitionSeeds\ other fold splits, the suit's reduction ranges over
-\redSuitSeedMin--\redSuitSeedMax~pp and the own outfits' reductions over \redOwnSeedMin--\redOwnSeedMax~pp.
+For the \nSubjects\ subjects of the primary scale rule, the baseline model, which uses no photograph, predicts the
+tape-measured waist girth with an MAPE of \mapeBaseline\%. In the measurement suit, the widths lower the MAPE by \redSuit~pp, whereas in the own outfits
+they lower it by \redOwnMin--\redOwnMax~pp (Table~\ref{tab:outfits}). The \ciLevel\% confidence interval
+of the suit's reduction lies above zero, whereas the interval of each own outfit's reduction in MAPE includes zero. The shortfall is \shortfallMin--\shortfallMax~pp in the five
+outfits, so the own outfits remove most of the suit's reduction. The \ciLevel\% confidence interval of each
+own outfit's shortfall lies above zero.
 
-The subjects' own clothes widen both waist widths in every outfit (Table~\ref{tab:outfits}). In every outfit and for
-both widths, the interquartile range of the growth over subjects is \growthIqrMin--\growthIqrMax~cm, so the growth
-differs between subjects. One reading of the shortfall is that a linear model's intercept and coefficients absorb the
-part of the growth that all subjects share, whereas the part that differs between subjects adds to the error. Another
-reading is that the labelers drew the torso's polygon less precisely in loose clothing than in the measurement suit.
-The design does not separate one reading from the other.
+One explanation of the shortfall rests on a waist width's growth, the outfit's width minus the suit's width. The
+growth has a positive median over subjects for both widths in every own outfit (Table~\ref{tab:outfits}), so a linear
+model's intercept and coefficients can absorb the part of the growth that all subjects share. In every own outfit and for
+both widths, however, the interquartile range of the growth over subjects is \growthIqrMin--\growthIqrMax~cm, so the
+part of the growth that differs between subjects adds to the error. Another
+explanation is that the labelers drew the torso's polygon less precisely in the own outfits than in the measurement suit.
+The design does not distinguish between the two explanations.
 
-In the five other variants of the analysis, the subjects' own clothes also remove most of the suit's reduction in
-every own outfit (Supplementary Table~\ref{S-tab:sensitivity}). In the five other variants, the \ciLevel\% confidence
-interval of every own outfit's shortfall also lies above zero. Whether the own outfits' reduction exceeds zero, however,
-depends on the variant: the \ciLevel\% confidence interval of every own outfit's reduction includes zero under each scale
-rule when the ellipse girth replaces the widths.
+In the five other variants of the analysis, every own outfit also removes most of the suit's reduction (Table~\ref{S-tab:sensitivity} in the Supplementary Material). In the five other variants, the
+\ciLevel\% confidence interval of every own outfit's shortfall also lies above zero. The interval of each
+own outfit's reduction in MAPE includes zero in every variant. We also added the self-report errors that Bartol et
+al.\cite{bartol2022} assumed for customers to the main variant's stature and weight in \nDraws\ random draws
+(Section~\ref{S-sec:selfreport} in the Supplementary Material). Each own outfit's interval then lies above zero, although
+the widths lower the MAPE by at most \selfRedOwnMax~pp.
 
-With the self-report errors added to stature and weight, the baseline model's MAPE rises from \mapeBaseline\% to
-\selfBaseMin--\selfBaseMax\% over the \nDraws\ draws. In the same draws, the widths lower
-the baseline model's MAPE by \selfRedSuitMin--\selfRedSuitMax~pp in the suit and by \selfRedOwnMin--\selfRedOwnMax~pp in the own outfits (Supplementary Table~\ref{S-tab:selfreport}).
-In every draw, the \ciLevel\% confidence interval of each own outfit's shortfall lies above zero.
-
-The weight-and-widths model is less accurate than the baseline model in the subjects' own clothes, whereas in the
-measurement suit the data do not show which of the two models is more accurate (Table~\ref{tab:outfits}). In the
-suit, the \ciLevel\% confidence interval of the weight-and-widths model's MAPE minus the baseline model's MAPE runs from
-\weightSuitDiffLo\ to \weightSuitDiffHi~pp. In each own outfit, the lower bound of the same interval is
-\weightOwnDiffLoMin~pp or above. A study that predicts the waist girth from dressed photographs needs to report,
-beside its own error, the error that the regression on stature, weight, sex and age reaches on the same subjects,
-because in the subjects' own clothes the widths add little to that regression and weight with the widths alone predicts
-the girth less accurately than that regression.
-
-The results have four limitations. First, the data come from one camera rig, one team of labelers and one population,
-Korean adults. Second, the results concern the waist girth predicted without depths, so they do not test Feng et al.'s
+The results have four limitations. First, the data come from one camera rig, one team of labelers and one population of
+Korean adults. Second, the results concern the waist girth predicted without measured depths, so they do not test Feng et al.'s
 models of the chest, waist and hip girths, which use depths. Third, labelers drew the polygons by hand, whereas a
-customization service would extract the body's contour with software, which may trace loose clothing differently.
+customization service would extract the body's contour with software, whose contours in everyday clothing may differ
+from the labelers' polygons.
 Fourth, the dataset names each own outfit only by its season and records no garment's ease, the allowance of a
 garment's size over the body, so the growth of the widths cannot be traced to a property of the garments.
 
 \begin{table}[t]
 \centering
 \caption{Waist girth prediction by outfit under the primary scale rule, for the \nSubjects\ subjects who have the
-widths in all six outfits. The baseline model on stature, weight, sex and age has an MAPE of \mapeBaseline\% and an
-RMSE of \rmseBaseline~cm. Width model: the MAPE of the model on the baseline model's inputs plus the outfit's frontal
+widths in all six outfits. Width model: the MAPE of the model on the baseline model's inputs plus the outfit's frontal
 and diagonal widths. Reduction: the baseline model's MAPE minus the width model's MAPE, with its \ciLevel\% bootstrap
 confidence interval over subjects, and the same difference in RMSE with its interval. Shortfall: the measurement suit's reduction minus
-the outfit's reduction. Weight + widths: the MAPE of the weight-and-widths model. Width growth: the median over subjects
+the outfit's reduction. Width growth: the median over subjects
 of the outfit's width minus the suit's width. MAPE in \%, reductions and shortfalls in percentage points or in cm as
-headed, widths in cm. Differences were computed before rounding.}
+headed, widths in cm.}
 \label{tab:outfits}
 \scriptsize
 \setlength{\tabcolsep}{4pt}
@@ -294,21 +271,21 @@ headed, widths in cm. Differences were computed before rounding.}
 \section{Conclusion}\label{sec:conclusion}
 
 A regression on stature, weight, sex and age predicts girth without any photograph, so part of the accuracy that a model
-on dressed photographs reaches can come from that regression's inputs alone. We measured what two waist widths in
-photographs add to such a regression for Korean adults photographed in a measurement suit and in five of their own
-outfits. The widths lowered the regression's mean absolute percentage error by \redSuit\
-percentage points in the measurement suit, whereas in the subjects' own clothes they lowered the error by
-\redOwnMin--\redOwnMax\ percentage points, by at most \redOwnMaxAll\ percentage points in any variant of the
-analysis under any fold split, and by at most \selfRedOwnMax\ percentage points with the self-report errors added to
-stature and weight. A regression on weight and the own outfits' widths alone predicted the waist girth less accurately than the
-regression on stature, weight, sex and age.
+on dressed photographs reaches can come from that regression's inputs alone. We measured what two waist widths of
+hand-drawn torso polygons add to such a regression for Korean adults photographed in a measurement suit and in five
+of their own outfits. The widths lowered the regression's mean absolute percentage error by \redSuit\
+percentage points in the measurement suit, with a \ciLevel\% confidence interval above zero, whereas in the own outfits
+their reductions of \redOwnMin--\redOwnMax\ percentage points each had an interval that includes zero when stature and
+weight are measured. The suit's reduction
+exceeded each own outfit's reduction in every variant of the analysis. Studies that predict waist girth from dressed photographs therefore need to report the
+error that a regression on stature, weight, sex and age reaches on the same subjects.
 
 \section*{Data availability}
 
 AI Hub (\url{https://www.aihub.or.kr}) distributes the dataset Whole Body Shape and Dimension Measurement Data for
 Koreans on application. The code that computes every number in this article from the dataset's polygons and tape records is
 public.
-The code's address is withheld from this anonymized version and given on the title page.
+The code's address is withheld from this anonymized version and given on the separate title page.
 
 \bibliographystyle{vancouver-sage}
 \bibliography{refs}

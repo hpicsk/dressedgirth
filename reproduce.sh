@@ -17,3 +17,4 @@ cd ..
 python -m pytest -q test_assertions.py
 cd paper
 latexmk -pdf -interaction=nonstopmode -halt-on-error supplement main
+latexmk -pdf -interaction=nonstopmode -halt-on-error supplement  # again, now that main.aux numbers the figure it cites

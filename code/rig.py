@@ -8,8 +8,9 @@ and fix the scale rule of read_560.py:
   pillar A's says how far the camera stands from the frontal axis (cos 45° ≈ 0.71 at ±45° and ±135°, 0 at the sides);
 - the height in pixels in each own outfit over the height in pixels in the measurement suit, per subject and camera:
   a ratio above 1 is the heel of the subject's own shoes.
-Two further counts say which girths and views the torso polygon allows: the share of standing-pose images that
-carry 몸통 in each pillar, and the share of pillar A's images whose 몸통 spans the tape hip level (엉덩이높이 under the
+Three further counts say which girths and views the torso polygon allows: the share of standing-pose images that
+carry 몸통 in each pillar, the number that carry 머리, 몸통 and a foot, which the widths need, and the share of pillar
+A's images whose 몸통 spans the tape hip level (엉덩이높이 under the
 primary scale rule); the tape header, which names the heights that the records give, is written beside them.
 It also counts the tape subjects who appear in the standing-pose images, and gives the recorded heel height
 (신발굽높이) as a share of 키 over the tape subjects, to compare with the rise in the height in pixels.
@@ -24,6 +25,7 @@ from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 
 import read_560 as r5
+import reduction as red
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results", "rig.json")
 LEGS = ("아래오른쪽다리", "아래왼쪽다리")  # lower right leg, lower left leg
@@ -31,8 +33,8 @@ LEGS = ("아래오른쪽다리", "아래왼쪽다리")  # lower right leg, lower
 def read(z):
     """Per standing-pose image with 머리 and a foot: subject, outfit, camera, the height in pixels, the leg offset in
     units of the height in pixels when both lower legs are labelled, and the vertical span of 몸통 above the bottom of
-    the feet in the same units when 몸통 is labelled. Beside them, per standing-pose image: its camera and
-    whether it carries 몸통."""
+    the feet in the same units when 몸통 is labelled. Beside them, per standing-pose image: its camera, whether it
+    carries 몸통, and whether it carries 머리, 몸통 and a foot, which the widths of read_560.read_zip need."""
     out, torso = [], []
     with zipfile.ZipFile(z) as zf:
         for m in zf.namelist():
@@ -44,8 +46,8 @@ def read(z):
                 continue
             d = json.loads(raw)
             L = {x["polygon"]["label"]: r5.pts(x["polygon"]["location"]) for x in d["labelingInfo"]}
-            torso.append((int(camera), "몸통" in L))
-            feet = [L[k] for k in ("오른발", "왼발") if k in L]
+            feet = [L[k] for k in r5.FOOT_LABELS if k in L]
+            torso.append((int(camera), "몸통" in L, "몸통" in L and "머리" in L and bool(feet)))
             if "머리" not in L or not feet:
                 continue
             bottom = max(F[:, 1].max() for F in feet)
@@ -75,15 +77,16 @@ def main():
         ratio[g] = {"n_image_pairs": len(rs), "median": float(np.median(rs)),
                     "iqr": [float(np.percentile(rs, 25)), float(np.percentile(rs, 75))]}
     tape = r5.read_tape()
-    torso_by_pillar = {p: {"images": sum(r5.pillar_of(c) == p for c, _ in torso),
-                           "with_torso": sum(r5.pillar_of(c) == p and has for c, has in torso)}
+    torso_by_pillar = {p: {"images": sum(r5.pillar_of(c) == p for c, _, _ in torso),
+                           "with_torso": sum(r5.pillar_of(c) == p and has for c, has, _ in torso),
+                           "with_head_torso_foot": sum(r5.pillar_of(c) == p and full for c, _, full in torso)}
                        for p in r5.PILLARS}
     hip = {g: {"images": 0, "hip_level_inside_torso": 0} for g in r5.OUTFITS}
     for subject, outfit, camera, _, _, span in images:
         t = tape.get(subject)
         if r5.pillar_of(camera) != "A" or span is None or t is None or t["hip_height"] is None:
             continue
-        heel = r5.heel_for(t, outfit, r5.SCALE_RULES[0])
+        heel = r5.heel_for(t, outfit, red.PRIMARY_RULE)
         hip[outfit]["images"] += 1
         hip[outfit]["hip_level_inside_torso"] += span[0] <= (t["hip_height"] + heel) / (t["stature"] + heel) <= span[1]
     photographed = {row[0] for row in images} & tape.keys()
