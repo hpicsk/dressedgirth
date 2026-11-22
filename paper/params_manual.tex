@@ -1,11 +1,21 @@
 % params_manual.tex -- the numbers that no result table or script in this repository derives: the versions of the
-% software, and facts of the dataset's documentation that no script uses. Hand-edited; each line names its source.
+% software, facts of the dataset's documentation that no script uses, and a published result of another paper that
+% the Results compare with. Hand-edited; each line names its source.
 % test_assertions.py reads this file beside params.tex.
 % Population: none
 
 % The software that ran the analysis (requirements.txt pins it; test_assertions.py compares the two).
+% Population: none
 \newcommand{\sklearnVersion}{1.8.0}     % requirements.txt: scikit-learn==1.8.0
 \newcommand{\numpyVersion}{2.4.2}       % requirements.txt: numpy==2.4.2
 
 % The dataset's documentation (the construction guide and the data manual that AI Hub distributes with it).
+% Population: none
 \newcommand{\subjectsPlanned}{1{,}000}    % guide, 촬영 대상: 1,000 명의 한국 국적 남녀
+
+% Feng et al. 2026 (doi:10.1177/00405175251403964), the published result that sec:results compares with the width model.
+% Population feng: Feng et al.'s test set, the 43 of their 215 young men whom they held out from the fit
+% Population: feng
+\newcommand{\fengWaistMape}{1.26}       % Table 8, Scheme 3 (weight and the weighted sum of width and thickness), waist girth, mean value of relative error (%)
+
+% Crossing fengWaistMape mapeWidthSuit mapeWidthOwnMin mapeWidthOwnMax: a comparison of this paper's width model, on its own subjects, with the error that Feng et al. measured on their test set

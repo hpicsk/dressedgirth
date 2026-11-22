@@ -27,7 +27,7 @@ Degrees of freedom (none fitted beyond the regressions' coefficients, which are 
 BASELINE: ordinary least squares on 키, 몸무게, 성별 and 나이, with the two waist widths added for each outfit |
 obvious alternative: a nonlinear learner on the same inputs | tuning: none, one configuration | discharge:
 sec:models, which states that the models of Feng et al. and Bartol et al., whose inputs these models follow, are
-linear
+linear, and run (code/nonlinear.py, the supplement's sec:nonlinear)
 """
 import json
 import math

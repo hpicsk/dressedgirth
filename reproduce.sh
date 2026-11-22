@@ -9,8 +9,9 @@ python rig.py          # pillar placement, the ratio of heights in pixels, the h
                        # -> results/rig.json
 python reduction.py    # the baseline and width models under every scale rule and form of the waist input, and
                        # the main variant with self-report errors -> results/reduction.json
+python nonlinear.py    # the main variant with a polynomial regression and boosted trees -> results/nonlinear.json
 python make_params.py  # -> paper/params.tex, paper/tab_outfits.tex, paper/tab_sensitivity.tex,
-                       #    paper/tab_self_report.tex
+                       #    paper/tab_self_report.tex, paper/tab_nonlinear.tex
 python fig_rig.py      # -> paper/fig_rig.pdf
 
 cd ..

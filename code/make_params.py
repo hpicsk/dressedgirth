@@ -15,7 +15,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 RESULTS = os.path.join(HERE, "..", "results")
 PAPER = os.path.join(HERE, "..", "paper")
 OUT = os.path.join(PAPER, "params.tex")
-TABLES = {"tab_outfits.tex": "outfits", "tab_sensitivity.tex": "sensitivity", "tab_self_report.tex": "self_report"}
+TABLES = {"tab_outfits.tex": "outfits", "tab_sensitivity.tex": "sensitivity", "tab_self_report.tex": "self_report",
+          "tab_nonlinear.tex": "nonlinear"}
 
 POPULATIONS = {
     "tape": "the dataset's tape records (신체정보데이터.zip), the subjects that carry every field the analysis reads",
@@ -41,6 +42,8 @@ OUTFIT_NAMES = {"01": "Measurement suit", "02": "Spring/autumn 1", "03": "Spring
                 "05": "Summer 2", "06": "Winter"}
 RULE_NAMES = {"shod_own_clothes": "Own outfits", "shod_always": "Every outfit", "barefoot_always": "None"}
 FEATURE_NAMES = {"widths": "Widths", "girth": "Ellipse girth"}
+MODEL_NAMES = {"linear": "Ordinary least squares", "poly2": "Second-order polynomial", "hgb_default": "Gradient-boosted trees"}
+NONLINEAR = ("poly2", "hgb_default")
 
 def load(name):
     with open(os.path.join(RESULTS, name)) as fh:
@@ -60,9 +63,6 @@ def rmse(x):
 
 def count(n):
     return f"{n:,}".replace(",", "{,}")
-
-def config(rule, features):
-    return load("reduction.json")["configurations"][f"{rule} | {features}"]
 
 def own(block, key, k=None):
     """The values of one per-outfit field over the five own outfits."""
@@ -90,11 +90,14 @@ def blocks():
         ("mapeBaseline", pp(prim["mape_baseline"])),
         ("redSuit", pp(suit["reduction_pp"])),
         ("redOwnMin", pp(min(own(prim, "reduction_pp")))), ("redOwnMax", pp(max(own(prim, "reduction_pp")))),
-        ("shortfallMin", pp(min(own(prim, "shortfall_pp")))), ("shortfallMax", pp(max(own(prim, "shortfall_pp")))),
+        ("shortfallLoMin", pp(min(own(prim, "shortfall_ci95", 0)))),
+        ("shortfallLoMax", pp(max(own(prim, "shortfall_ci95", 0)))),
+        ("mapeWidthSuit", pp(suit["mape"])),
+        ("mapeWidthOwnMin", pp(min(own(prim, "mape")))), ("mapeWidthOwnMax", pp(max(own(prim, "mape")))),
         ("growthIqrMin", cm(min(q[k][1] - q[k][0] for q in own(prim, "width_growth_cm_iqr") for k in (0, 1)))),
         ("growthIqrMax", cm(max(q[k][1] - q[k][0] for q in own(prim, "width_growth_cm_iqr") for k in (0, 1))))])
     yield ("Sensitivities: the other scale rules and the ellipse girth (code/reduction.py)", "subjects", [
-        ("nSubjectsNoHeel", count(config("barefoot_always", "widths")["n_subjects"]))])
+        ("nSubjectsNoHeel", count(res["configurations"]["barefoot_always | widths"]["n_subjects"]))])
     draws = res["self_report"]["draws"]
     yield ("Self-reported stature and weight: the main variant with the self-report error (code/reduction.py)",
            "subjects", [
@@ -104,6 +107,10 @@ def blocks():
         ("selfRedSuitMax", pp(max(d["per_outfit"][r5.SUIT]["reduction_pp"] for d in draws))),
         ("selfRedOwnMin", pp(min(min(own(d, "reduction_pp")) for d in draws))),
         ("selfRedOwnMax", pp(max(max(own(d, "reduction_pp")) for d in draws)))])
+    nl = load("nonlinear.json")["models"]
+    yield ("Nonlinear models: the main variant with a polynomial regression and boosted trees (code/nonlinear.py)",
+           "subjects", [
+        ("nlShortfallLoMin", pp(min(min(own(nl[k], "shortfall_ci95", 0)) for k in NONLINEAR)))])
     rig = load("rig.json")
     gain = [100 * (v["median"] - 1) for v in rig["height_px_ratio_to_suit"].values()]
     torso = {p: 100 * v["with_torso"] / v["images"] for p, v in rig["torso_by_pillar"].items()}
@@ -115,7 +122,8 @@ def blocks():
         ("torsoSideMax", f"{max(torso[p] for p in ('C', 'G')):.1f}", "pose-images"),
         ("torsoOtherMin", f"{min(v for p, v in torso.items() if p not in ('C', 'G')):.1f}", "pose-images"),
         ("hipShareMin", f"{min(hip):.0f}", "hip-images"), ("hipShareMax", f"{max(hip):.0f}", "hip-images"),
-        ("footImagesE", count(rig["torso_by_pillar"]["E"]["with_head_torso_foot"]), "pose-images")])
+        ("footImagesE", count(rig["torso_by_pillar"]["E"]["with_head_torso_foot"]), "pose-images"),
+        ("imagesE", count(rig["torso_by_pillar"]["E"]["images"]), "pose-images")])
 
 def render():
     lines = ["% params.tex: the numbers that the manuscript prints from results/, written by code/make_params.py;",
@@ -205,6 +213,27 @@ def self_report():
             cells.append(f"{pp(sum(v) / len(v))} & {pp(min(v))}--{pp(max(v))} & {pp(lo)}")
         rows.append(f"{OUTFIT_NAMES[g]} & {cells[0]} & {cells[1]} \\\\")
     return SELF_REPORT_HEAD + "\n".join(rows) + "\n" + TAIL
+
+NONLINEAR_HEAD = r"""\begin{tabular}{lrlrrr}
+\toprule
+ & Baseline & & Own outfits & \multicolumn{2}{c}{Shortfall} \\
+\cmidrule(lr){5-6}
+Model & MAPE & Suit & Range & Range & Lowest bound \\
+\midrule
+"""
+
+def nonlinear():
+    """The tabular of tab:nonlinear: one row per model of code/nonlinear.py, ordinary least squares first."""
+    models = load("nonlinear.json")["models"]
+    rows = []
+    for k in ("linear",) + NONLINEAR:
+        b = models[k]
+        suit = b["per_outfit"][r5.SUIT]
+        rows.append(f"{MODEL_NAMES[k]} & {pp(b['mape_baseline'])} & {pp(suit['reduction_pp'])} ({ci(suit['reduction_ci95'])}) & "
+                    f"{pp(min(own(b, 'reduction_pp')))}--{pp(max(own(b, 'reduction_pp')))} & "
+                    f"{pp(min(own(b, 'shortfall_pp')))}--{pp(max(own(b, 'shortfall_pp')))} & "
+                    f"{pp(min(own(b, 'shortfall_ci95', 0)))} \\\\")
+    return NONLINEAR_HEAD + "\n".join(rows) + "\n" + TAIL
 
 def main():
     with open(OUT, "w") as fh:

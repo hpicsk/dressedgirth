@@ -4,9 +4,9 @@ Analysis code and data for a short communication on the dataset *Whole Body Shap
 Koreans*, which AI Hub lists as 한국인 전신 형상 및 치수 측정 데이터(성인).
 In the dataset, each subject was photographed in a measurement suit and in five outfits of the subject's own clothes,
 and the waist girth was measured with a tape. Adding the waist widths to a regression of the tape waist girth on
-stature, weight, sex and age lowers the regression's error in the measurement suit; in the subjects' own clothes the
-reduction is a small fraction of that, and its 95% confidence interval includes zero when stature and weight are
-measured. The manuscript's Results give the numbers.
+stature, weight, sex and age lowers the regression's error in the measurement suit; in each outfit of the subjects'
+own clothes the reduction is a small fraction of that, and the 95% confidence interval of its difference from the
+suit's reduction lies above zero. The manuscript's Results give the numbers.
 
 ## Layout
 
@@ -14,8 +14,8 @@ measured. The manuscript's Results give the numbers.
 paper/              LaTeX manuscript: main.tex and supplement.tex, title.tex (the title that both print), refs.bib,
                     vancouver-sage.bst (the journal's reference style), params.tex, the table bodies tab_*.tex and the
                     figure fig_rig.pdf (generated), params_manual.tex (hand-edited)
-code/               read_560.py (the readers), rig.py and reduction.py (each writes a result table into results/),
-                    make_params.py and fig_rig.py (write the generated files in paper/)
+code/               read_560.py (the readers), rig.py, reduction.py and nonlinear.py (each writes a result table into
+                    results/), make_params.py and fig_rig.py (write the generated files in paper/)
 results/            the result tables that make_params.py and test_assertions.py read
 test_assertions.py  every manuscript claim, checked against results/ and paper/
 reproduce.sh        every stage in order, from the downloaded label files to the checked PDF
