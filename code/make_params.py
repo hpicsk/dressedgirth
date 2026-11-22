@@ -96,8 +96,6 @@ def blocks():
         ("mapeWidthOwnMin", pp(min(own(prim, "mape")))), ("mapeWidthOwnMax", pp(max(own(prim, "mape")))),
         ("growthIqrMin", cm(min(q[k][1] - q[k][0] for q in own(prim, "width_growth_cm_iqr") for k in (0, 1)))),
         ("growthIqrMax", cm(max(q[k][1] - q[k][0] for q in own(prim, "width_growth_cm_iqr") for k in (0, 1))))])
-    yield ("Sensitivities: the other scale rules and the ellipse girth (code/reduction.py)", "subjects", [
-        ("nSubjectsNoHeel", count(res["configurations"]["barefoot_always | widths"]["n_subjects"]))])
     draws = res["self_report"]["draws"]
     yield ("Self-reported stature and weight: the main variant with the self-report error (code/reduction.py)",
            "subjects", [

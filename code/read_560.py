@@ -102,9 +102,9 @@ def chord(P, y):
     return max(xs) - min(xs) if len(xs) >= 2 else None
 
 def heel_for(t, outfit, rule):
-    """The heel added to 키 under a scale rule. The subjects are taken to stand barefoot in the measurement suit and
-    in their own shoes otherwise (sec:rig), so shod_own_clothes is the primary rule and the other two are its
-    sensitivities."""
+    """The heel added to 키 under a scale rule. The subjects' height rises from the measurement suit to their own
+    outfits by less than the recorded heel (sec:rig), so shod_own_clothes, which adds the heel in the own outfits only, is
+    the primary rule, and the other two, which bound the rise with it, are its sensitivities."""
     if rule == "shod_always":
         return t["heel"]
     if rule == "barefoot_always":

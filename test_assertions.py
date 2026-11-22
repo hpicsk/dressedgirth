@@ -127,10 +127,6 @@ def test_subjects_enter_every_model():
             f"sec:models claims that 'The models use only the subjects who have widths in all six outfits', but {key} "
             f"scores {block['n_subjects']} subjects against at most "
             f"{min(by_outfit.values())} with features")
-    shod = {b["n_subjects"] for b in results()["configurations"].values() if b["scale_rule"] != "barefoot_always"}
-    assert shod == {primary()["n_subjects"]}, (
-        f"sec:models claims 'These subjects number {primary()['n_subjects']} under each scale rule that adds a heel "
-        f"height', as tab:sensitivity prints; the two rules score {shod}")
 
 # sec:rig
 
@@ -141,7 +137,8 @@ def test_pillar_order():
         f"right leg appears on the left of the image'; offset A {rig['A']:.3f}")
     ratio = mp.load("rig.json")["leg_offset_ratio_to_A"]
     assert all(ratio[p] > 0 for p in ("B", "H")) and all(ratio[p] < 0 for p in ("D", "E", "F")), (
-        f"sec:rig places 'pillars B and H at ±45° from the front, pillars D and F at ±135°' and 'pillar E at 180°', "
+        f"sec:rig places 'pillars B and H at 45° on either side of the front' and 'pillars D and F at 135° and pillar E "
+        f"at 180°', "
         f"which the signs of the measured ratios show; ratios {ratio}")
     assert min(abs(ratio[p]) for p in r5.DIAGONAL) > max(abs(ratio[p]) for p in ("C", "G")), (
         f"sec:rig places the diagonal pillars at ±45° and ±135° and C and G at ±90°; ratios {ratio}")
@@ -151,22 +148,22 @@ def test_pillar_order():
     expected = {"A": 1, "B": c, "H": c, "C": 0, "G": 0, "D": -c, "F": -c, "E": -1}
     nearest = {p: min(set(expected.values()), key=lambda v: abs(ratio[p] - v)) for p in expected}
     assert nearest == expected, (
-        f"the supplement's sec:rigangles claims that Figure 1(a) prints 'each pillar's measured ratio, which lies "
-        f"nearest the ratio for the angle at which the main text places the pillar'; ratios {ratio}")
+        f"the supplement's sec:rigangles claims that Figure 1(a) prints 'each pillar's measured ratio, which is closer "
+        f"to the ratio for the angle at which the main text places the pillar than to the ratio for any other of these "
+        f"angles'; ratios {ratio}")
     axis = {p for p, v in nearest.items() if abs(v) == 1}
     diagonal = {p for p, v in nearest.items() if abs(v) == c}
     assert (axis, diagonal) == (set(r5.FRONT_BACK), set(r5.DIAGONAL)), (
-        f"sec:features claims that '$a$ is the mean of the half-widths that pillars A and E give from the front and "
-        f"from behind, and $m$ the mean of the half-widths that the four diagonal pillars give'; the measured ratios "
+        f"sec:features claims that '$a$ is the mean of the half-widths that pillars A and E give, and $m$ the mean of "
+        f"the half-widths that the four diagonal pillars give'; the measured ratios "
         f"place {sorted(axis)} on the front-back axis and {sorted(diagonal)} on the diagonals, whereas the code averages "
         f"{r5.FRONT_BACK} and {r5.DIAGONAL}")
 
 def test_subjects_taller_in_own_outfits():
     ratios = mp.load("rig.json")["height_px_ratio_to_suit"]
     assert all(v["median"] > 1 for v in ratios.values()), (
-        f"sec:rig claims that 'The subjects stood barefoot in the measurement suit and wore shoes in their own "
-        f"outfits', and the supplement's sec:shoes that 'A rise in every own outfit means that the subjects wore shoes "
-        f"in their own outfits and not in the suit', from the "
+        f"sec:rig claims that 'The subjects' height rises from the measurement suit to their own outfits', and the "
+        f"supplement's sec:shoes that 'the height in pixels rises from the suit', from the "
         f"median rise over pairs of photographs from one camera in each of the five outfits; median ratios {ratios}")
 
 def test_shoes_rise_less_than_the_heel():
@@ -174,8 +171,9 @@ def test_shoes_rise_less_than_the_heel():
     gain = max(100 * (v["median"] - 1) for v in rig["height_px_ratio_to_suit"].values())
     heel = rig["heel_share_of_stature_pct"]["median"]
     assert gain < heel, (
-        f"sec:rig claims 'The shoes raised the subjects by less than the recorded heel height' and 'The primary rule "
-        f"therefore overstates the rise in the own outfits', comparing, as the supplement's sec:shoes does, the rise "
+        f"sec:rig claims that the subjects' height rises 'by less than the recorded heel height' and "
+        f"that the primary scale rule 'overstates the rise in those outfits', comparing, as the supplement's sec:shoes "
+        f"does, the rise "
         f"in the height in pixels with the recorded heel height's median share of stature; largest rise {gain:.2f}%, "
         f"heel share {heel:.2f}%")
 
@@ -193,7 +191,8 @@ def test_pillar_e_rarely_gives_a_half_width():
     by = mp.load("rig.json")["torso_by_pillar"]
     e, a = by["E"]["with_head_torso_foot"], by["A"]["with_head_torso_foot"]
     assert e < 0.05 * a, (
-        f"sec:features claims 'Pillar E's photographs rarely show a foot, so $a$ rests almost entirely on pillar A', "
+        f"sec:features claims 'Pillar E's photographs rarely carry a foot polygon, so $a$ rests almost entirely on "
+        f"pillar A', "
         f"and the supplement's sec:widths that 'Pillar E gives a half-width in only {e}' of its standing photographs; "
         f"pillar A gives {a}")
 
@@ -232,9 +231,10 @@ def test_own_reductions_in_rmse():
 def test_shortfall_holds_in_every_configuration():
     starts = {k: min(own(b, "shortfall_ci95", 0)) for k, b in results()["configurations"].items()}
     assert all(v > 0 for v in starts.values()), (
-        f"sec:results claims that 'The 95% confidence interval of each own outfit's shortfall has a lower bound of "
-        f"{macros(PARAM_FILES[0])['shortfallLoMin']}-{macros(PARAM_FILES[0])['shortfallLoMax']} pp' and that 'In the five other variants of the analysis' the interval of every own outfit's "
-        f"shortfall also lies above zero, as the abstract, sec:intro and sec:conclusion state in each variant; the "
+        f"sec:results claims that 'The lower bounds of the five own outfits' 95% confidence intervals for the "
+        f"shortfall are {macros(PARAM_FILES[0])['shortfallLoMin']}-{macros(PARAM_FILES[0])['shortfallLoMax']} pp' and "
+        f"that 'The interval of each own outfit's shortfall lies above zero in each of the five other variants', as the "
+        f"abstract, sec:intro and sec:conclusion state in each variant; the "
         f"lowest lower bounds are {starts}")
 
 def test_no_own_reduction_above_zero_in_any_variant():
@@ -266,7 +266,8 @@ def test_self_report_shortfall_in_every_draw():
     reds = [min(own(d, "reduction_ci95", 0)) for d in draws]
     assert len(draws) == mp.red.N_DRAWS and min(lows) > 0 and min(reds) > 0, (
         f"sec:results claims, for the self-report errors in {mp.red.N_DRAWS} random draws, that 'The interval of "
-        f"each own outfit's shortfall lies above zero in each of those variants and draws' and that 'the interval of "
+        f"each own outfit's shortfall lies above zero in each of the five other variants and in each draw' and that "
+        f"'the interval of "
         f"each own outfit's reduction in MAPE lies above zero in every draw'; the lowest lower bounds per draw are "
         f"{reds} and {lows}")
 
@@ -285,9 +286,9 @@ def test_clothes_widen_both_widths():
 def test_growth_differs_between_subjects():
     iqr = [q[k][1] - q[k][0] for q in own(primary(), "width_growth_cm_iqr") for k in (0, 1)]
     assert min(iqr) > 1, (
-        f"sec:results claims that the interquartile range of the growth over subjects is at least "
-        f"{macros(PARAM_FILES[0])['growthIqrMin']} cm in every outfit and for both widths, 'so the part of the growth "
-        f"that differs between subjects adds to the error'; the ranges are {iqr}")
+        f"sec:results claims that 'the growth's interquartile range over subjects, which depends on the outfit and the "
+        f"width, is {macros(PARAM_FILES[0])['growthIqrMin']} to {macros(PARAM_FILES[0])['growthIqrMax']} cm' and that "
+        f"the part of the growth that differs between subjects 'adds to the error'; the ranges are {iqr}")
 
 WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6}
 
@@ -372,5 +373,6 @@ def test_release_is_the_tree_of_main():
     differ = sorted(p for p in released.keys() | expected.keys() if released.get(p) != expected.get(p))
     assert not differ, (
         f"The data availability statement says that 'The code that computes this article's results from the "
-        f"dataset's polygons and tape measurements is available at {RELEASE}', but its main branch differs from this tree "
+        f"dataset's polygons and tape measurements is public', and the title page gives {RELEASE}, but its main branch "
+        f"differs from this tree "
         f"in {differ}")

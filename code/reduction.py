@@ -16,8 +16,8 @@ Degrees of freedom (none fitted beyond the regressions' coefficients, which are 
 - PARTITION_SEEDS: CHOSEN. Nine further fold seeds, for the spread of each reduction over partitions.
 - N_BOOT, BOOT_SEED: CHOSEN. Paired bootstrap of subjects, with the out-of-fold predictions held fixed.
 - CI_LEVEL: CHOSEN. The percentile interval's level, the field's convention.
-- PRIMARY_RULE: CHOSEN. rig.py's ratio of heights in pixels shows that the subjects wore shoes in their own
-  outfits and not in the suit; the rise is about half the recorded heel height's share of stature, and the two
+- PRIMARY_RULE: CHOSEN. rig.py's ratio of heights in pixels shows that the subjects' height rises from the suit
+  to their own outfits; the rise is about half the recorded heel height's share of stature, and the two
   other rules, the heel in every outfit and in none, bracket it in the own outfits.
 - PRIMARY_FEATURES: CHOSEN. The two widths; the ellipse girth is the sensitivity.
 - SELF_REPORT_SD_CM, SELF_REPORT_SD_KG: CHOSEN. Bartol et al.'s model of self-reported stature and weight (sec. 3.1:
@@ -26,8 +26,8 @@ Degrees of freedom (none fitted beyond the regressions' coefficients, which are 
 
 BASELINE: ordinary least squares on 키, 몸무게, 성별 and 나이, with the two waist widths added for each outfit |
 obvious alternative: a nonlinear learner on the same inputs | tuning: none, one configuration | discharge:
-sec:models, which states that the models of Feng et al. and Bartol et al., whose inputs these models follow, are
-linear, and run (code/nonlinear.py, the supplement's sec:nonlinear)
+sec:intro, which describes the models of Feng et al. and Bartol et al., whose inputs these models follow, as linear
+regressions, and run (code/nonlinear.py, the supplement's sec:nonlinear)
 """
 import json
 import math

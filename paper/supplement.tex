@@ -26,8 +26,7 @@
 The dataset's file names number the cameras from 1 to \camerasTotal, \camerasPerPillar\ to a pillar, so pillar A
 holds cameras 1--\camerasPerPillar. The dataset's label files, which hold the polygons, name the lower legs by the subject's own right and left. The leg offset,
 in units of the subject's height in pixels, is the mean horizontal coordinate of the right lower-leg polygon's
-vertices minus that of the left lower-leg polygon's vertices. A camera at the angle $\theta$ from the subject's front sees the leg offset
-shortened to $\cos\theta$ times its length. For each camera, we took the median of the leg offset over subjects in the measurement
+vertices minus that of the left lower-leg polygon's vertices. For each camera, we took the median of the leg offset over subjects in the measurement
 suit's standing photographs. For each pillar, we averaged the cameras' medians over the pillar's cameras. The leg
 offset is negative in pillar A, which means that the subject's right leg appears on the left of the image, so pillar A
 faces the subject's front. By the $\cos\theta$ shortening, the ratio of a pillar's leg offset to pillar A's leg offset
@@ -37,11 +36,11 @@ pillar than to the ratio for any other of these angles.
 
 \section{Shoes}\label{sec:shoes}
 
-To test whether the subjects wore shoes, we paired each own-outfit photograph of a subject with the same camera's
-photograph of the subject in the measurement suit. For each pair, we divided the height in pixels in the outfit by the
-height in pixels in the suit. For each own outfit, we took the median of this ratio over the pairs. Over the own
+To measure how much taller the subjects stood in their own outfits than in the measurement suit, we paired each own-outfit photograph of a subject with the same camera's
+photograph of the subject in the measurement suit. For each pair, we divided the height in pixels in the outfit by the height in pixels in the suit. Because one camera took both photographs from the same position, this ratio is the ratio of the subject's heights in the two outfits if the
+subject stood at the same place in both photographs. For each own outfit, we took the median of this ratio over the pairs. Over the own
 outfits, the height in pixels rises from the suit by a median of \statureGainMin--\statureGainMax\%, whereas the
-recorded heel height has a median of \heelShareMedian\% of stature.
+recorded heel height has a median of \heelShareMedian\% of stature. 
 
 \section{Waist widths}\label{sec:widths}
 
@@ -57,8 +56,7 @@ half-width
 \end{equation}
 At $\theta = 45^\circ$, the
 half-width $m$ therefore satisfies $2m^2 = a^2 + b^2$, so $b = \sqrt{2m^2 - a^2}$. The ellipse girth is $S$ times
-the mean, over the kept camera heights, of Ramanujan's approximation to the perimeter of the ellipse with semi-axes
-$a$ and $b$,\cite{ramanujan1914}
+the mean, over the kept camera heights, of Ramanujan's approximation to the perimeter of the ellipse with semi-axes $a$ and $b$, his equation (49),\cite{ramanujan1914}
 \begin{equation}
 \pi\bigl[3(a + b) - \sqrt{(3a + b)(a + 3b)}\bigr].
 \end{equation}
@@ -75,7 +73,7 @@ Because a customer reports stature and weight with error, we added self-report e
 normal, with the standard deviations of \selfReportSdCm~cm and \selfReportSdKg~kg that Bartol et al.\
 assumed.\cite{bartol2022} In each draw, the stature with its error also sets the scale $S$. With the errors added, the
 baseline model's MAPE rises from \mapeBaseline\% to \selfBaseMin--\selfBaseMax\% over the draws. In the same
-draws, the widths lower the baseline model's MAPE by \selfRedSuitMin--\selfRedSuitMax~pp in the suit and by
+draws, the reduction is \selfRedSuitMin--\selfRedSuitMax~pp in the suit and
 \selfRedOwnMin--\selfRedOwnMax~pp in the own outfits (Table~\ref{tab:selfreport}).
 
 \section{Nonlinear models}\label{sec:nonlinear}
